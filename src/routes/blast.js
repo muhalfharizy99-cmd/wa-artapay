@@ -6,6 +6,7 @@ const waService = require('../services/whatsappService');
 const multer = require('multer');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 const upload = multer({ storage: multer.memoryStorage() });
 
 const BLAST_UPLOAD_DIR = path.resolve(process.cwd(), 'public', 'assets', 'blast');
@@ -574,20 +575,121 @@ router.get('/blast/campaigns/:id/logs', blastAuth, async (req, res) => {
 
 // ─── PUBLIC CRON ENDPOINT ───────────────────────────────────────────────────
 
+// Generate new secure cron token
+router.post('/blast/cron-token/generate', blastAuth, async (req, res) => {
+    try {
+        // Generate cryptographically secure random token (32 bytes = 64 hex chars)
+        const newToken = crypto.randomBytes(32).toString('hex');
+        
+        // Save to database
+        await query(
+            `INSERT INTO app_settings (setting_key, setting_value, updated_at) 
+             VALUES (?, ?, NOW()) 
+             ON DUPLICATE KEY UPDATE setting_value = VALUES(setting_value), updated_at = NOW()`,
+            ['blast_cron_token', newToken]
+        );
+        
+        // Build the full cron URL
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const cronUrl = `${protocol}://${host}/api/cron/blast?token=${newToken}`;
+        
+        res.json({ 
+            success: true, 
+            data: { 
+                token: newToken,
+                cron_url: cronUrl,
+                message: 'Token berhasil di-generate. Simpan token ini dengan aman!'
+            } 
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
+// Get current cron token info (masked for security)
+router.get('/blast/cron-token/info', blastAuth, async (req, res) => {
+    try {
+        const tokenRow = await queryOne('SELECT setting_value, updated_at FROM app_settings WHERE setting_key = ?', ['blast_cron_token']);
+        
+        if (!tokenRow || !tokenRow.setting_value) {
+            return res.json({ 
+                success: true, 
+                data: { 
+                    exists: false,
+                    message: 'Token belum di-generate. Silakan generate token baru.'
+                } 
+            });
+        }
+        
+        const token = tokenRow.setting_value;
+        const maskedToken = token.substring(0, 8) + '...' + token.substring(token.length - 8);
+        const protocol = req.protocol;
+        const host = req.get('host');
+        const cronUrl = `${protocol}://${host}/api/cron/blast?token=${token}`;
+        
+        res.json({ 
+            success: true, 
+            data: { 
+                exists: true,
+                token_masked: maskedToken,
+                token_full: token,
+                cron_url: cronUrl,
+                last_updated: tokenRow.updated_at,
+                token_length: token.length
+            } 
+        });
+    } catch (err) {
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
+
 // Public cron endpoint - run pending campaigns (no auth required, uses secret token)
 router.get('/cron/blast', async (req, res) => {
     try {
         const { token, limit = 10 } = req.query;
+        
+        // Validate token first
+        if (!token || typeof token !== 'string') {
+            return res.status(401).json({ success: false, message: 'Token required' });
+        }
+        
+        // Get token from database (more secure than .env)
+        const tokenRow = await queryOne('SELECT setting_value FROM app_settings WHERE setting_key = ?', ['blast_cron_token']);
+        const CRON_TOKEN = tokenRow?.setting_value;
+        
+        // If no token in DB, fall back to .env (for backward compatibility)
+        const fallbackToken = process.env.CRON_TOKEN;
+        
+        if (!CRON_TOKEN && !fallbackToken) {
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Cron token not configured. Please generate a token first.' 
+            });
+        }
+        
+        // Use timing-safe comparison to prevent timing attacks
+        let isValidToken = false;
+        try {
+            if (CRON_TOKEN && token.length === CRON_TOKEN.length) {
+                isValidToken = crypto.timingSafeEqual(Buffer.from(token), Buffer.from(CRON_TOKEN));
+            } else if (fallbackToken && token.length === fallbackToken.length) {
+                isValidToken = crypto.timingSafeEqual(Buffer.from(token), Buffer.from(fallbackToken));
+            }
+        } catch (err) {
+            // Fallback to regular comparison if lengths don't match
+            isValidToken = (CRON_TOKEN && token === CRON_TOKEN) || (fallbackToken && token === fallbackToken);
+        }
+        
+        if (!isValidToken) {
+            // Log failed attempt (optional - for security monitoring)
+            console.warn(`[SECURITY] Invalid cron token attempt from ${req.ip} at ${new Date().toISOString()}`);
+            return res.status(401).json({ success: false, message: 'Invalid token' });
+        }
+        
         const parsedLimit = Number.parseInt(limit, 10);
         const safeLimit = Number.isFinite(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 100) : 10;
         const nowLocal = getCurrentLocalDateTimeString();
-        
-        // Simple token protection (set in .env)
-        const tokenRow = await queryOne('SELECT setting_value FROM app_settings WHERE setting_key = ?', ['blast_cron_token']);
-        const CRON_TOKEN = tokenRow?.setting_value || process.env.CRON_TOKEN || 'default-cron-token-change-this';
-        if (token !== CRON_TOKEN) {
-            return res.status(401).json({ success: false, message: 'Invalid token' });
-        }
         
         // Get running campaigns or campaigns ready to run
         const campaigns = await query(
@@ -628,6 +730,7 @@ router.get('/cron/blast', async (req, res) => {
             },
         });
     } catch (err) {
+        console.error('[CRON] Error:', err);
         res.status(500).json({ success: false, message: err.message });
     }
 });

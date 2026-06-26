@@ -1,8 +1,29 @@
 <div class="blast-subpage space-y-4">
+  <!-- Cron Token Panel -->
+  <div class="card rounded-xl border p-4" style="border-color: var(--border); background-color: var(--bg-card);">
+    <div class="flex items-start justify-between mb-3">
+      <div>
+        <h3 class="text-sm font-semibold flex items-center gap-2" style="color: var(--t1)">
+          <svg class="w-4 h-4 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+          Cron URL (Public)
+        </h3>
+        <p class="text-xs mt-1" style="color: var(--t3)">Gunakan URL ini untuk menjalankan blast otomatis via cron job eksternal</p>
+      </div>
+      <button onclick="generateCronToken()" class="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all" style="background: linear-gradient(135deg, #eab308, #ca8a04); color: #fff;">
+        <svg class="w-3 h-3 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Generate Token Baru
+      </button>
+    </div>
+    
+    <div id="cron-token-info" class="space-y-2">
+      <div class="text-xs" style="color: var(--t3)">Loading token info...</div>
+    </div>
+  </div>
+
   <div class="flex items-center justify-between mb-3">
     <div>
-      <h2 class="text-sm font-semibold text-white">Daftar Campaign</h2>
-      <p class="text-xs text-gray-500 mt-0.5">Kelola target, progress, dan jadwal pengiriman blast</p>
+      <h2 class="text-sm font-semibold" style="color: var(--t1)">Daftar Campaign</h2>
+      <p class="text-xs mt-0.5" style="color: var(--t3)">Kelola target, progress, dan jadwal pengiriman blast</p>
     </div>
     <button onclick="openCreateCampaignModal()" class="btn-primary px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5">
       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
@@ -11,6 +32,6 @@
   </div>
 
   <div id="blast-campaigns-list" class="space-y-4">
-    <div class="text-xs text-gray-500">Memuat daftar campaign...</div>
+    <div class="text-xs" style="color: var(--t3)">Memuat daftar campaign...</div>
   </div>
 </div>

@@ -5,7 +5,7 @@
 @layer base {
   :root {
     --bg:        #181818;
-    --bg-surf:   #111111;
+    --bg-surf:   #181818;
     --bg-card:   #1a1a1a;
     --bg-input:  #151515;
     --border:    rgba(255,255,255,0.08);
@@ -39,5 +39,16 @@
     --sb:        rgba(22,163,74,0.35);
     --msg-in:    #ffffff;
     --msg-out:   #dcfce7;
+  }
+  
+  /* Smooth color transitions */
+  * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+  }
+  
+  *:where(:not(:has(canvas))) {
+    transition-property: background-color, border-color, color, fill, stroke;
   }
 }
