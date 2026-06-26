@@ -1,0 +1,157 @@
+<section id="sec-blast" class="p-6 animate-fade-in hidden">
+  <div class="flex items-center justify-between mb-5 gap-3 flex-wrap">
+    <div>
+      <h1 class="text-xl font-bold text-white">Blast Messages</h1>
+      <p class="text-xs text-gray-500 mt-0.5">Kirim pesan massal ke banyak kontak dengan delay</p>
+    </div>
+    <div class="flex items-center gap-2">
+      <button onclick="initBlastDeviceSel()" class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-green-400 border border-slate-700/50 hover:border-green-800/40 px-3 py-1.5 rounded-lg transition-all">
+        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+        Refresh
+      </button>
+    </div>
+  </div>
+
+  <!-- Device Selector -->
+  <div class="card rounded-xl border border-slate-700/40 p-4 mb-4">
+    <div class="flex items-center gap-3">
+      <div class="flex-1">
+        <label class="text-xs text-gray-500 mb-1.5 block">Device</label>
+        <select id="blast-device-sel" onchange="onBlastDeviceChange(this.value)" class="input-field w-full px-2.5 py-2 rounded-lg text-xs text-white">
+          <option value="">All devices</option>
+        </select>
+      </div>
+      <div class="text-xs text-gray-500">
+        <span id="blast-contact-count">0</span> kontak
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex items-center gap-2 mb-4 border-b border-slate-700/40 pb-2">
+    <button onclick="switchBlastTab('contacts')" id="tab-contacts" class="blast-tab px-3 py-1.5 text-xs font-medium rounded-lg transition-all bg-slate-700/50 text-white">Kontak</button>
+    <button onclick="switchBlastTab('campaigns')" id="tab-campaigns" class="blast-tab px-3 py-1.5 text-xs font-medium rounded-lg transition-all text-gray-500 hover:text-gray-300">Daftar Campaign</button>
+    <button onclick="switchBlastTab('logs')" id="tab-logs" class="blast-tab px-3 py-1.5 text-xs font-medium rounded-lg transition-all text-gray-500 hover:text-gray-300">Logs</button>
+  </div>
+
+  <div id="blast-tab-view" class="min-h-[240px]"></div>
+</section>
+
+<!-- Add Contact Modal -->
+<div id="blast-contact-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/75 backdrop-blur-sm" onclick="closeBlastContactModal()"></div>
+  <div class="relative card rounded-2xl border border-slate-700/50 p-5 flex flex-col gap-4 max-w-sm w-full shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-white">Tambah Kontak</h3>
+      <button onclick="closeBlastContactModal()" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-slate-700/50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="space-y-3">
+      <div>
+        <label class="text-xs text-gray-500 block mb-1">Nama</label>
+        <input id="blast-contact-name" type="text" placeholder="John Doe" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600"/>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 block mb-1">Nomor WhatsApp <span class="text-red-400">*</span></label>
+        <input id="blast-contact-phone" type="text" placeholder="628123456789" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600"/>
+        <p class="text-xs text-gray-600 mt-1">Format: 62xxx (tanpa + atau 0 di depan)</p>
+      </div>
+      <div>
+        <label class="text-xs text-gray-500 block mb-1">Group Kontak</label>
+        <select id="blast-contact-group" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white">
+          <option value="">Tanpa Group</option>
+        </select>
+      </div>
+    </div>
+    <button onclick="saveBlastContact()" class="btn-primary w-full py-2 rounded-lg text-xs font-semibold">Simpan</button>
+  </div>
+</div>
+
+<!-- Add Group Modal -->
+<div id="blast-group-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/75 backdrop-blur-sm" onclick="closeBlastGroupModal()"></div>
+  <div class="relative card rounded-2xl border border-slate-700/50 p-5 flex flex-col gap-4 max-w-sm w-full shadow-2xl">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-white">Tambah Group Kontak</h3>
+      <button onclick="closeBlastGroupModal()" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-slate-700/50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div>
+      <label class="text-xs text-gray-500 block mb-1">Nama Group <span class="text-red-400">*</span></label>
+      <input id="blast-group-name" type="text" placeholder="Contoh: Pelanggan VIP" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600"/>
+    </div>
+    <button onclick="saveBlastGroup()" class="btn-primary w-full py-2 rounded-lg text-xs font-semibold">Simpan Group</button>
+  </div>
+</div>
+
+<!-- Create Campaign Modal -->
+<div id="blast-campaign-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+  <div class="absolute inset-0 bg-black/75 backdrop-blur-sm" onclick="closeCampaignModal()"></div>
+  <div class="relative card rounded-2xl border border-slate-700/50 p-5 flex flex-col gap-4 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto">
+    <div class="flex items-center justify-between">
+      <h3 class="text-sm font-semibold text-white">Buat Campaign Baru</h3>
+      <button onclick="closeCampaignModal()" class="w-7 h-7 rounded-lg flex items-center justify-center text-gray-500 hover:text-white hover:bg-slate-700/50">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs text-gray-500 block mb-1">Nama Campaign <span class="text-red-400">*</span></label>
+          <input id="blast-campaign-name" type="text" placeholder="Promo Januari 2025" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600"/>
+        </div>
+        <div>
+          <label class="text-xs text-gray-500 block mb-1">Pesan Teks</label>
+          <textarea id="blast-campaign-message" rows="5" placeholder="Halo, kami ada promo spesial..." class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600 resize-none"></textarea>
+        </div>
+        <div class="border-t border-slate-700/40 pt-3">
+          <label class="text-xs text-gray-400 block mb-1">ATAU Kirim Media</label>
+          <input id="blast-campaign-media" type="text" placeholder="https://example.com/image.jpg" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600 mb-2"/>
+          <div class="flex items-center gap-2 mb-2 flex-wrap">
+            <input id="blast-campaign-media-file" type="file" class="hidden" accept="image/*,video/*,audio/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.rar,.webp" onchange="onBlastMediaFilePicked(this)"/>
+            <button type="button" onclick="document.getElementById('blast-campaign-media-file').click()" class="px-2.5 py-1 rounded-md text-[11px] border border-slate-700/50 text-gray-400 hover:text-white hover:border-slate-600 transition-all">Upload File Lokal</button>
+            <span id="blast-campaign-media-file-name" class="text-[11px] text-gray-500 truncate max-w-full"></span>
+          </div>
+          <input id="blast-campaign-caption" type="text" placeholder="Caption untuk media (opsional)" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600"/>
+        </div>
+      </div>
+      <div class="space-y-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-gray-500 block mb-1">Delay (milidetik)</label>
+            <input id="blast-campaign-delay" type="number" value="2000" min="1000" step="500" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white"/>
+            <p class="text-xs text-gray-600 mt-1">Jeda antar pesan</p>
+          </div>
+          <div>
+            <label class="text-xs text-gray-500 block mb-1">Jadwal Kirim (opsional)</label>
+            <input id="blast-campaign-schedule" type="datetime-local" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white"/>
+            <p class="text-xs text-gray-600 mt-1">Kosongkan untuk kirim langsung</p>
+          </div>
+        </div>
+        <div class="border-t border-slate-700/40 pt-3">
+          <label class="text-xs text-gray-500 block mb-1">Target Kontak</label>
+          <select id="blast-campaign-target-type" onchange="onBlastTargetModeChange(this.value)" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white mb-2">
+            <option value="all">Semua kontak aktif</option>
+            <option value="group">Berdasarkan group kontak</option>
+            <option value="manual">Pilih kontak manual</option>
+          </select>
+          <div id="blast-campaign-group-wrap" class="hidden">
+            <label class="text-xs text-gray-500 block mb-1">Pilih Group</label>
+            <select id="blast-campaign-group" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white"></select>
+          </div>
+          <div id="blast-campaign-manual-wrap" class="hidden mt-2">
+            <label class="text-xs text-gray-500 block mb-1">Nomor Manual</label>
+            <textarea id="blast-campaign-manual-input" rows="8" placeholder="628222333444&#10;62838388338" class="input-field w-full px-3 py-2 rounded-lg text-sm text-white placeholder-gray-600"></textarea>
+            <p class="text-xs text-gray-600 mt-1">Masukkan satu nomor per baris. Format: 62xxxxxxxxxxx</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flex gap-2 pt-2">
+      <button onclick="saveBlastCampaign()" class="btn-primary flex-1 py-2 rounded-lg text-xs font-semibold">Buat Campaign</button>
+      <button onclick="closeCampaignModal()" class="px-4 py-2 rounded-lg text-xs text-gray-500 border border-gray-700 hover:text-red-400">Batal</button>
+    </div>
+  </div>
+</div>

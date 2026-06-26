@@ -1,0 +1,66 @@
+<section id="sec-logs" class="p-6 animate-fade-in hidden">
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h1 class="text-xl font-bold text-white">Logs</h1>
+      <p class="text-sm text-gray-500">Webhook delivery history &amp; live system events</p>
+    </div>
+    <button onclick="loadLogs(true)" class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-green-400 border border-slate-700/50 hover:border-green-800/40 px-3 py-1.5 rounded-lg transition-all">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      Refresh
+    </button>
+  </div>
+
+  <!-- Tabs -->
+  <div class="flex items-center gap-1 border border-slate-700/50 rounded-lg p-0.5 mb-4 w-fit">
+    <button id="log-tab-webhook" onclick="switchLogTab('webhook')" class="px-3 py-1.5 rounded text-xs font-medium text-white bg-slate-700/60 transition-all">Webhook Delivery</button>
+    <button id="log-tab-live"    onclick="switchLogTab('live')"    class="px-3 py-1.5 rounded text-xs font-medium text-gray-500 hover:text-white transition-all">Live Events</button>
+  </div>
+
+  <!-- Webhook delivery log panel -->
+  <div id="log-panel-webhook">
+    <!-- Filters -->
+    <div class="card rounded-xl border border-slate-700/40 p-3.5 mb-3 flex items-center gap-3 flex-wrap">
+      <div class="flex items-center gap-1.5 border border-slate-700/50 rounded-lg overflow-hidden">
+        <button id="logf-all"     onclick="setLogFilter('all')"     class="px-3 py-1.5 text-xs font-medium text-white bg-slate-700/60 transition-all">All</button>
+        <button id="logf-success" onclick="setLogFilter('success')" class="px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-green-400 transition-all">Success</button>
+        <button id="logf-failed"  onclick="setLogFilter('failed')"  class="px-3 py-1.5 text-xs font-medium text-gray-500 hover:text-red-400 transition-all">Failed</button>
+      </div>
+      <span id="log-total-badge" class="text-xs text-gray-500 ml-auto"></span>
+    </div>
+
+    <!-- Table -->
+    <div class="card rounded-xl border border-slate-700/40 overflow-hidden">
+      <div class="grid grid-cols-12 gap-2 px-4 py-2.5 text-xs text-gray-500 font-semibold uppercase tracking-wider border-b border-slate-700/40 bg-black/20">
+        <div class="col-span-1">Status</div>
+        <div class="col-span-2">Event</div>
+        <div class="col-span-3">Webhook URL</div>
+        <div class="col-span-2">Device</div>
+        <div class="col-span-1 text-center">Code</div>
+        <div class="col-span-2 text-right">Time</div>
+        <div class="col-span-1 text-right">Detail</div>
+      </div>
+      <div id="log-wh-list" class="divide-y divide-slate-700/30">
+        <div class="text-xs text-gray-600 text-center py-10 animate-pulse">Loading...</div>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div id="log-wh-pagination" class="flex items-center justify-between mt-3 hidden">
+      <span id="log-wh-page-info" class="text-xs text-gray-500"></span>
+      <div class="flex items-center gap-2">
+        <button id="log-wh-prev" onclick="logWhChangePage(-1)" class="px-3 py-1.5 rounded-lg text-xs border border-slate-700/50 text-gray-400 hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed">← Prev</button>
+        <button id="log-wh-next" onclick="logWhChangePage(1)"  class="px-3 py-1.5 rounded-lg text-xs border border-slate-700/50 text-gray-400 hover:text-white transition-all disabled:opacity-40 disabled:cursor-not-allowed">Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Live events panel -->
+  <div id="log-panel-live" class="hidden">
+    <div class="flex justify-end mb-2">
+      <button onclick="clearLogs()" class="text-xs text-gray-500 hover:text-red-400 border border-slate-700/50 hover:border-red-900/40 px-3 py-1.5 rounded-lg transition-all">Clear</button>
+    </div>
+    <div id="log-container" class="card rounded-xl border border-slate-700/50 p-4 font-mono text-xs space-y-1 max-h-[calc(100vh-280px)] overflow-y-auto">
+      <div class="text-gray-600">— Waiting for events —</div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>WA Gateway — Login</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={darkMode:'class',theme:{extend:{colors:{surface:{900:'#0a0f0d',800:'#0f1a14',700:'#152b1e',600:'#1c3a28'}},fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
+<script>
+(() => {
+  const pref = localStorage.getItem('wa-theme') || 'system';
+  const systemLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  const useLight = pref === 'light' || (pref === 'system' && systemLight);
+  document.documentElement.classList.toggle('light', useLight);
+})();
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box}
+body{background:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,0.08) 0%,transparent 60%),#0a0f0d}
+.card{background:linear-gradient(135deg,rgba(21,43,30,.95) 0%,rgba(15,26,20,.98) 100%);backdrop-filter:blur(20px)}
+.input-field{background:rgba(21,43,30,.7);border:1px solid rgba(34,197,94,.2);transition:all .25s}
+.input-field:focus{outline:none;border-color:rgba(34,197,94,.6);box-shadow:0 0 0 3px rgba(34,197,94,.1)}
+.input-field::placeholder{color:#4b5563}
+.btn-login{background:linear-gradient(135deg,#16a34a,#15803d);transition:all .25s;position:relative;overflow:hidden}
+.btn-login::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.08),transparent);opacity:0;transition:opacity .25s}
+.btn-login:hover::before{opacity:1}
+.btn-login:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(22,163,74,.35)}
+.btn-login:active{transform:translateY(0);box-shadow:none}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none;box-shadow:none}
+.logo-glow{filter:drop-shadow(0 0 20px rgba(34,197,94,.5))}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.float{animation:float 4s ease-in-out infinite}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .5s ease-out forwards}
+.delay-1{animation-delay:.1s;opacity:0}
+.delay-2{animation-delay:.2s;opacity:0}
+.delay-3{animation-delay:.3s;opacity:0}
+.delay-4{animation-delay:.4s;opacity:0}
+.grid-bg{background-image:linear-gradient(rgba(34,197,94,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(34,197,94,.03) 1px,transparent 1px);background-size:40px 40px}
+::-webkit-scrollbar{display:none}
+.shake{animation:shake .4s ease-in-out}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+
+/* Theme variables */
+:root{
+  --bg:#0a0f0d;
+  --bg-grad:radial-gradient(ellipse at 50% 0%,rgba(34,197,94,0.08) 0%,transparent 60%);
+  --card-grad:linear-gradient(135deg,rgba(21,43,30,.95) 0%,rgba(15,26,20,.98) 100%);
+  --card-border:rgba(34,197,94,.22);
+  --input-bg:rgba(21,43,30,.7);
+  --input-border:rgba(34,197,94,.2);
+  --input-focus:rgba(34,197,94,.6);
+  --input-ring:rgba(34,197,94,.1);
+  --t1:#f5f5f5;
+  --t2:#a3a3a3;
+  --t3:#666666;
+  --grid:rgba(34,197,94,.03);
+}
+html.light{
+  --bg:#f6fbf7;
+  --bg-grad:radial-gradient(ellipse at 50% 0%,rgba(22,163,74,.08) 0%,transparent 60%);
+  --card-grad:linear-gradient(135deg,rgba(255,255,255,.98) 0%,rgba(248,250,252,.98) 100%);
+  --card-border:rgba(22,163,74,.25);
+  --input-bg:#ffffff;
+  --input-border:rgba(22,163,74,.28);
+  --input-focus:rgba(22,163,74,.62);
+  --input-ring:rgba(22,163,74,.14);
+  --t1:#0f172a;
+  --t2:#475569;
+  --t3:#94a3b8;
+  --grid:rgba(22,163,74,.12);
+}
+
+body{background:var(--bg-grad),var(--bg) !important;color:var(--t1) !important}
+.card{background:var(--card-grad)!important;border-color:var(--card-border)!important}
+.input-field{background:var(--input-bg)!important;border-color:var(--input-border)!important;color:var(--t1)!important}
+.input-field:focus{border-color:var(--input-focus)!important;box-shadow:0 0 0 3px var(--input-ring)!important}
+.input-field::placeholder{color:var(--t3)!important}
+.grid-bg{background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px)!important}
+
+html.light .text-white{color:var(--t1)!important}
+html.light .text-gray-600{color:var(--t2)!important}
+html.light .text-gray-500,
+html.light .text-gray-400{color:var(--t2)!important}
+html.light .btn-login{background:linear-gradient(135deg,#16a34a,#15803d)!important}
+html.light .btn-login:hover{box-shadow:0 8px 25px rgba(22,163,74,.28)!important}
+html.light #alert{background:rgba(220,38,38,.08)!important;border-color:rgba(220,38,38,.25)!important}
+html.light #alert-msg{color:#991b1b!important}
+</style>
+</head>
+<body class="grid-bg min-h-screen flex items-center justify-center p-4 font-sans">
+
+<!-- Ambient orbs -->
+<div class="fixed inset-0 pointer-events-none overflow-hidden">
+  <div class="absolute -top-40 -left-40 w-80 h-80 rounded-full bg-green-900/20 blur-3xl"></div>
+  <div class="absolute -bottom-40 -right-40 w-80 h-80 rounded-full bg-green-800/15 blur-3xl"></div>
+</div>
+
+<div class="w-full max-w-sm relative z-10">
+
+  <!-- Logo -->
+  <div class="text-center mb-8 fade-up delay-1">
+    <div class="inline-flex items-center justify-center logo-glow float mb-4">
+      <svg class="w-16 h-16" viewBox="0 0 64 64" aria-hidden="true">
+        <path fill="#7FD371" d="M32.01 1h-.019C14.902 1 1 14.903 1 31.999a30.786 30.786 0 0 0 5.903 18.17L3.042 61.688l11.914-3.809A30.754 30.754 0 0 0 32.01 63C49.1 63 63 49.094 63 32 63 14.904 49.1 1 32.01 1zm18.036 43.775c-.745 2.113-3.716 3.863-6.084 4.375-1.622.345-3.735.619-10.858-2.334-9.111-3.772-14.978-13.03-15.433-13.633-.438-.601-3.681-4.902-3.681-9.349s2.259-6.616 3.171-7.546c.747-.765 1.986-1.109 3.17-1.109.384 0 .728.018 1.039.034.911.038 1.366.094 1.967 1.532.747 1.803 2.569 6.251 2.788 6.706.218.456.438 1.075.127 1.676-.292.62-.546.896-1.001 1.423-.457.527-.895.93-1.349 1.494-.419.492-.894 1.021-.364 1.932.529.895 2.35 3.864 5.028 6.25 3.461 3.08 6.267 4.065 7.27 4.484.746.311 1.64.236 2.187-.346.692-.748 1.549-1.986 2.423-3.207.619-.877 1.403-.985 2.222-.676.839.291 5.268 2.479 6.179 2.935.909.456 1.511.674 1.729 1.057.218.385.218 2.188-.53 4.302z"/>
+        <path fill="#6DBC61" d="M1 31.999a30.786 30.786 0 0 0 5.903 18.17L3.042 61.688l11.914-3.809A30.754 30.754 0 0 0 32.01 63C49.1 63 63 49.094 63 32 63 14.904 49.1 1 32.01 1h-.019m18.055 43.775c-.745 2.113-3.716 3.863-6.084 4.375-1.622.345-3.735.619-10.858-2.334-9.111-3.772-14.978-13.03-15.433-13.633-.438-.601-3.681-4.902-3.681-9.349s2.259-6.616 3.171-7.546c.747-.765 1.986-1.109 3.17-1.109.384 0 .728.018 1.039.034.911.038 1.366.094 1.967 1.532.747 1.803 2.569 6.251 2.788 6.706.218.456.438 1.075.127 1.676-.292.62-.546.896-1.001 1.423-.457.527-.895.93-1.349 1.494-.419.492-.894 1.021-.364 1.932.529.895 2.35 3.864 5.028 6.25 3.461 3.08 6.267 4.065 7.27 4.484.746.311 1.64.236 2.187-.346.692-.748 1.549-1.986 2.423-3.207.619-.877 1.403-.985 2.222-.676.839.291 5.268 2.479 6.179 2.935.909.456 1.511.674 1.729 1.057.218.385.218 2.188-.53 4.302z"/>
+        <path fill="#549B45" d="M41.921 2.635c7.904 6.757 13.063 17.085 13.063 25.829 0 4.816-1.569 9.322-4.294 13.193-.036.799-.213 1.902-.645 3.118-.745 2.113-3.716 3.863-6.084 4.375a8.242 8.242 0 0 1-1.516.198c-5.188 3.235-11.618 5.15-18.583 5.15-6.272 0-12.107-1.557-16.995-4.229L3.042 61.688l11.914-3.809A30.754 30.754 0 0 0 32.01 63C49.1 63 63 49.094 63 32c0-13.628-8.838-25.22-21.079-29.365z"/>
+        <path fill="#549B45" d="M42.667 36.482c.208.072.632.26 1.168.507L23.119 16.274c.072.137.145.294.218.472.747 1.803 2.569 6.251 2.788 6.706.218.456.438 1.075.127 1.676-.292.62-.546.896-1.001 1.423-.457.527-.895.93-1.349 1.494-.419.492-.894 1.021-.364 1.932.529.895 2.35 3.864 5.028 6.25 3.461 3.08 6.267 4.065 7.27 4.484.746.311 1.64.236 2.187-.346.692-.748 1.549-1.986 2.423-3.207.618-.877 1.403-.985 2.221-.676z"/>
+        <path fill="#5CAA4F" d="m13.992 23.862-.204.205.223.222c-.008-.142-.019-.284-.019-.427z"/>
+      </svg>
+    </div>
+    <h1 class="text-2xl font-bold text-white tracking-tight">WA Gateway</h1>
+    <p class="text-sm text-gray-500 mt-1">Sign in to your dashboard</p>
+  </div>
+
+  <!-- Card -->
+  <div class="card rounded-2xl border border-green-900/40 p-7 shadow-2xl fade-up delay-2">
+
+    <!-- Error alert -->
+    <div id="alert" class="hidden mb-4 px-4 py-3 rounded-xl bg-red-900/40 border border-red-800/50 flex items-center gap-2.5">
+      <svg class="w-4 h-4 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+      </svg>
+      <span id="alert-msg" class="text-sm text-red-300 font-medium"></span>
+    </div>
+
+    <form id="login-form" onsubmit="doLogin(event)" autocomplete="off">
+      <!-- Username -->
+      <div class="mb-4 fade-up delay-3">
+        <label class="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">Username</label>
+        <div class="relative">
+          <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+            </svg>
+          </div>
+          <input id="username" type="text" name="username" autocomplete="username"
+            placeholder="Enter username"
+            class="input-field w-full pl-10 pr-4 py-2.5 rounded-xl text-sm text-white"
+            onkeydown="clearAlert()"/>
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div class="mb-6 fade-up delay-3">
+        <label class="block text-xs font-semibold text-gray-400 mb-1.5 uppercase tracking-wider">Password</label>
+        <div class="relative">
+          <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+          </div>
+          <input id="password" type="password" name="password" autocomplete="current-password"
+            placeholder="Enter password"
+            class="input-field w-full pl-10 pr-11 py-2.5 rounded-xl text-sm text-white"
+            onkeydown="clearAlert()"/>
+          <button type="button" onclick="togglePwd()" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-300 transition-colors" tabindex="-1">
+            <svg id="eye-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Submit -->
+      <button type="submit" id="btn-login" class="btn-login w-full py-3 rounded-xl text-sm font-bold text-white tracking-wide fade-up delay-4 flex items-center justify-center gap-2">
+        <svg id="btn-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+        </svg>
+        <span id="btn-text">Sign In</span>
+      </button>
+    </form>
+  </div>
+
+  <!-- Footer -->
+  <div class="text-center mt-6 fade-up delay-4">
+    <p class="text-xs text-gray-600">&copy; 2026 WA Gateway</p>
+  </div>
+
+</div>
+
+<script>
+let showPwd = false;
+
+function togglePwd() {
+  showPwd = !showPwd;
+  const input = document.getElementById('password');
+  input.type = showPwd ? 'text' : 'password';
+  const icon = document.getElementById('eye-icon');
+  icon.innerHTML = showPwd
+    ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>`
+    : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+}
+
+function clearAlert() {
+  document.getElementById('alert').classList.add('hidden');
+}
+
+function showAlert(msg) {
+  const el = document.getElementById('alert');
+  document.getElementById('alert-msg').textContent = msg;
+  el.classList.remove('hidden');
+  document.getElementById('login-form').classList.add('shake');
+  setTimeout(() => document.getElementById('login-form').classList.remove('shake'), 400);
+}
+
+async function doLogin(e) {
+  e.preventDefault();
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value;
+  const btn      = document.getElementById('btn-login');
+  const btnText  = document.getElementById('btn-text');
+  const btnIcon  = document.getElementById('btn-icon');
+
+  if (!username || !password) return showAlert('Please fill in all fields');
+
+  btn.disabled = true;
+  btnText.textContent = 'Signing in...';
+  btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>`;
+  btnIcon.classList.add('animate-spin');
+
+  try {
+    const res = await fetch('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      btnText.textContent = 'Redirecting...';
+      window.location.href = data.redirect || '/';
+    } else {
+      showAlert(data.message || 'Login failed');
+      btn.disabled = false;
+      btnText.textContent = 'Sign In';
+      btnIcon.classList.remove('animate-spin');
+      btnIcon.innerHTML = `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>`;
+    }
+  } catch (err) {
+    showAlert('Connection error. Is the server running?');
+    btn.disabled = false;
+    btnText.textContent = 'Sign In';
+    btnIcon.classList.remove('animate-spin');
+  }
+}
+
+function getThemePreference() {
+  return localStorage.getItem('wa-theme') || 'system';
+}
+
+function applyLoginTheme() {
+  const pref = getThemePreference();
+  const systemLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  const useLight = pref === 'light' || (pref === 'system' && systemLight);
+  document.documentElement.classList.toggle('light', useLight);
+}
+
+const _loginMedia = window.matchMedia ? window.matchMedia('(prefers-color-scheme: light)') : null;
+if (_loginMedia) {
+  const onSystemThemeChange = () => {
+    if (getThemePreference() === 'system') applyLoginTheme();
+  };
+  if (typeof _loginMedia.addEventListener === 'function') _loginMedia.addEventListener('change', onSystemThemeChange);
+  else if (typeof _loginMedia.addListener === 'function') _loginMedia.addListener(onSystemThemeChange);
+}
+
+applyLoginTheme();
+
+// Auto-focus username
+document.getElementById('username').focus();
+</script>
+</body>
+</html>

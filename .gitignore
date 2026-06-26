@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# WhatsApp session data (Chrome user-data dir, recreated on connect)
+sessions/
+
+# Downloaded Chromium binary
+.chromium/
+
+# Environment
+.env
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db

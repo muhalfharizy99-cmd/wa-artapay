@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>WA Gateway — API Docs</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>tailwind.config={theme:{extend:{colors:{surface:{900:'#0f1117',800:'#161b22',700:'#1c2333',600:'#21262d'}},fontFamily:{sans:['Inter','system-ui','sans-serif']}}}}</script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0f1117;--bg-surf:#161b22;--bg-card:rgba(22,27,34,.96);--bg-input:rgba(13,17,23,.8);
+  --border:rgba(48,54,61,.75);--border-s:rgba(48,54,61,.4);
+  --accent:#3b82f6;--accent-bg:rgba(59,130,246,.12);--accent-br:rgba(59,130,246,.35);
+  --t1:#e6edf3;--t2:#8b949e;--t3:#484f58;
+  --code-fg:#93c5fd;--sb:rgba(75,85,99,.4);
+}
+html.light{
+  --bg:#f1f5f9;--bg-surf:#fff;--bg-card:rgba(255,255,255,.99);--bg-input:#f8fafc;
+  --border:rgba(148,163,184,.5);--border-s:rgba(148,163,184,.25);
+  --accent:#2563eb;--accent-bg:rgba(37,99,235,.08);--accent-br:rgba(37,99,235,.3);
+  --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
+  --code-fg:#1d4ed8;--sb:rgba(148,163,184,.5);
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--t1);font-family:'Inter',sans-serif}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--sb);border-radius:4px}
+nav.sticky-nav{background:var(--bg-surf)!important;border-bottom-color:var(--border)!important}
+aside{background:var(--bg-surf)!important;border-right-color:var(--border)!important}
+.card{background:var(--bg-card);backdrop-filter:blur(8px);border-color:var(--border)}
+.input-field{background:var(--bg-input);border:1px solid var(--border);transition:border-color .2s,box-shadow .2s;color:var(--t1)}
+.input-field:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(59,130,246,.15)}
+.input-field::placeholder{color:var(--t3)}
+select.input-field option{background:var(--bg-surf);color:var(--t1)}
+code,pre,textarea.mono{font-family:'JetBrains Mono',monospace}
+.method-GET   {background:#0d2a1f;color:#34d399;border-color:#065f46}
+.method-POST  {background:#1e3a5f;color:#60a5fa;border-color:#1e40af}
+.method-PATCH {background:#3b2a0e;color:#fbbf24;border-color:#92400e}
+.method-DELETE{background:#3b1111;color:#f87171;border-color:#991b1b}
+html.light .method-GET   {background:#d1fae5;color:#065f46;border-color:#6ee7b7}
+html.light .method-POST  {background:#dbeafe;color:#1e40af;border-color:#93c5fd}
+html.light .method-PATCH {background:#fef3c7;color:#92400e;border-color:#fcd34d}
+html.light .method-DELETE{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.endpoint-card{border:1px solid var(--border-s);transition:border-color .2s}
+.endpoint-card:hover{border-color:var(--border)}
+.endpoint-card.open{border-color:var(--accent-br)}
+.endpoint-header{cursor:pointer;user-select:none}
+.chevron{transition:transform .2s}
+.chevron.open{transform:rotate(180deg)}
+.status-2xx{color:#34d399}
+.status-4xx{color:#f87171}
+.status-5xx{color:#fbbf24}
+html.light .status-2xx{color:#16a34a}
+html.light .status-4xx{color:#dc2626}
+.copy-btn{opacity:0;transition:opacity .2s}
+pre:hover .copy-btn{opacity:1}
+.nav-link{color:var(--t2);transition:color .2s,background .2s;border-radius:6px}
+.nav-link:hover,.nav-link.active{color:var(--accent);background:var(--accent-bg)}
+.sticky-nav{position:sticky;top:0;z-index:20}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.fade-in{animation:fadeIn .25s ease-out}
+.response-area{max-height:400px;overflow:auto}
+.tag{font-size:.65rem;font-weight:600;padding:2px 7px;border-radius:99px;border-width:1px}
+pre code{color:var(--code-fg)}
+html.light .text-gray-300{color:#1e293b!important}
+html.light .text-gray-400,html.light .text-gray-500{color:var(--t2)!important}
+html.light .text-white{color:var(--t1)!important}
+html.light [class*="bg-black"]{background:rgba(0,0,0,.04)!important}
+html.light [class*="bg-surface-"]{background:var(--bg)!important}
+</style>
+</head>
+<body class="text-gray-300 min-h-screen">
+
+<!-- Top Nav -->
+<nav class="sticky-nav bg-surface-900/95 backdrop-blur border-b border-slate-700/60 px-4 h-14 flex items-center gap-4">
+  <a href="/" class="flex items-center gap-2 text-blue-400 font-bold text-sm hover:text-blue-300 transition-colors">
+    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+    WhatsApp Gateway ArtaPay
+  </a>
+  <span class="text-gray-700">|</span>
+  <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">API Reference</span>
+  <div class="ml-auto flex items-center gap-3">
+    <div id="user-badge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-lg border border-slate-700/50 bg-blue-900/10">
+      <span id="user-badge-name" class="text-xs text-gray-300"></span>
+      <span id="user-badge-type" class="text-xs font-semibold px-1.5 py-0.5 rounded bg-blue-900/30 text-blue-400"></span>
+    </div>
+    <button onclick="toggleTheme()" id="theme-btn" title="Toggle light/dark" class="w-8 h-8 rounded-lg border border-slate-700/50 hover:border-slate-500 flex items-center justify-center text-gray-500 hover:text-yellow-400 transition-all">
+      <svg id="theme-icon-dark" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>
+      <svg id="theme-icon-light" class="w-4 h-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>
+    </button>
+    <button onclick="doLogout()" class="w-8 h-8 rounded-lg border border-red-900/40 hover:border-red-700 hover:bg-red-900/20 flex items-center justify-center text-gray-500 hover:text-red-400 transition-all">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+    </button>
+  </div>
+</nav>
+
+<div class="flex min-h-[calc(100vh-56px)]">
+
+<!-- Sidebar -->
+<aside class="w-56 flex-shrink-0 border-r border-slate-700/50 p-4 hidden lg:block sticky top-14 self-start h-[calc(100vh-56px)] overflow-y-auto">
+  <div class="mb-4">
+    <div class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">API Key</div>
+    <input id="sidebar-apikey" type="text" placeholder="your-api-key" class="input-field w-full px-2.5 py-1.5 rounded-lg text-xs" oninput="saveKey(this.value)"/>
+    <div id="key-status" class="mt-1 text-xs text-gray-600">Not set</div>
+  </div>
+  <div class="mb-4">
+    <div class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2">Base URL</div>
+    <div id="base-url-display" class="text-xs text-blue-400 font-mono break-all"></div>
+  </div>
+  <div class="space-y-0.5">
+    <div class="text-xs font-semibold text-gray-600 uppercase tracking-wider mb-2 mt-4">Endpoints</div>
+    <a href="#cat-status"   class="nav-link block px-2.5 py-1.5 text-xs">📡 Status & QR</a>
+    <a href="#cat-send"     class="nav-link block px-2.5 py-1.5 text-xs">💬 Send Messages</a>
+    <a href="#cat-contacts" class="nav-link block px-2.5 py-1.5 text-xs">👥 Contacts & Chats</a>
+    <a href="#cat-webhooks" class="nav-link block px-2.5 py-1.5 text-xs">🔗 Webhooks</a>
+    <a href="#cat-device"   class="nav-link block px-2.5 py-1.5 text-xs">⚙️ Device Control</a>
+    <a href="#cat-ws"       class="nav-link block px-2.5 py-1.5 text-xs">🌐 WebSocket</a>
+  </div>
+</aside>
+
+<!-- Main -->
+<main class="flex-1 max-w-4xl mx-auto px-4 py-8 space-y-10">
+
+  <!-- Header -->
+  <div>
+    <h1 class="text-2xl font-bold text-white mb-2">WhatsApp Gateway ArtaPay API</h1>
+    <p class="text-sm text-gray-500">Panduan integrasi cepat untuk menghubungkan kirim pesan WhatsApp ke sistem lain dengan API key per device.</p>
+    <div class="mt-4 p-3 rounded-xl bg-yellow-900/20 border border-yellow-800/30 text-xs text-yellow-300 flex gap-2">
+      <svg class="w-4 h-4 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+      <span>All endpoints (except <code class="bg-black/30 px-1 rounded">GET /api/status</code> and <code class="bg-black/30 px-1 rounded">GET /api/qr</code>) require the header <code class="bg-black/30 px-1 rounded">X-API-Key: &lt;your-key&gt;</code></span>
+    </div>
+    <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div class="card rounded-xl border border-slate-700/40 p-4">
+        <div class="text-sm font-semibold text-white mb-2">Cara Integrasi</div>
+        <div class="text-xs text-gray-500 space-y-1">
+          <div>1. Pastikan device sudah <span class="text-green-400">ready</span>.</div>
+          <div>2. Ambil API key per device dari menu device/dashboard.</div>
+          <div>3. Gunakan endpoint <code class="bg-black/30 px-1 rounded">POST /api/send</code> untuk teks.</div>
+          <div>4. Gunakan <code class="bg-black/30 px-1 rounded">POST /api/send/media</code> untuk media.</div>
+          <div>5. Tambahkan <code class="bg-black/30 px-1 rounded">device_id</code> bila integrasi Anda menangani banyak device.</div>
+        </div>
+      </div>
+      <div class="card rounded-xl border border-slate-700/40 p-4">
+        <div class="text-sm font-semibold text-white mb-2">Contoh Header</div>
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>Base URL  : http://localhost:3000
+X-API-Key : YOUR_API_KEY
+
+POST /api/send
+Content-Type: application/json</code></pre>
+      </div>
+    </div>
+    <div class="mt-4 card rounded-xl border border-slate-700/40 p-4">
+      <div class="text-sm font-semibold text-white mb-3">Contoh Integrasi</div>
+      <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>curl -X POST "http://localhost:3000/api/send" \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_API_KEY" \
+  -d '{"to":"628123456789","message":"Halo dari ArtaPay"}'</code></pre>
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>fetch('http://localhost:3000/api/send', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'X-API-Key': 'YOUR_API_KEY'
+  },
+  body: JSON.stringify({ to: '628123456789', message: 'Halo dari JS' })
+});</code></pre>
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>$payload = ['to' => '628123456789', 'message' => 'Halo dari PHP'];</code></pre>
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>requests.post(
+  'http://localhost:3000/api/send',
+  headers={'X-API-Key': 'YOUR_API_KEY'},
+  json={'to': '628123456789', 'message': 'Halo dari Python'}
+)</code></pre>
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>req.Header.Set("X-API-Key", "YOUR_API_KEY")
+req.Header.Set("Content-Type", "application/json")</code></pre>
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>POST /api/send/media
+{
+  "to": "628123456789",
+  "mediaUrl": "https://example.com/file.pdf",
+  "caption": "Dokumen ArtaPay"
+}</code></pre>
+      </div>
+    </div>
+  </div>
+  <!-- ─── STATUS & QR ─────────────────────── -->
+  <section id="cat-status">
+    <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+      <span class="w-1 h-5 rounded bg-green-500 inline-block"></span> Status &amp; QR
+    </h2>
+    <div class="space-y-3">
+      <!-- GET /api/status -->
+      <div class="endpoint-card card rounded-xl" id="ep-status">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('status')">
+          <span class="method-GET tag border">GET</span>
+          <code class="text-sm text-white font-medium">/api/status</code>
+          <span class="text-xs text-gray-500">Get device connection status</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-2 gap-4 mb-4">
+            <div><div class="text-xs text-gray-500 mb-1">Auth Required</div><span class="tag method-GET border">No</span></div>
+            <div><div class="text-xs text-gray-500 mb-1">Method</div><span class="tag method-GET border">GET</span></div>
+          </div>
+          <div class="mb-3">
+            <div class="text-xs font-semibold text-gray-400 mb-1">Response</div>
+            <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto"><code>{ "success": true, "data": { "status": "ready", "info": { "pushname": "...", "number": "..." } } }</code></pre>
+          </div>
+          <button onclick="runTest('GET','/api/status',null,'resp-status')" class="btn-test">▶ Run</button>
+          <div id="resp-status" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <!-- GET /api/qr -->
+      <div class="endpoint-card card rounded-xl" id="ep-qr">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('qr')">
+          <span class="method-GET tag border">GET</span>
+          <code class="text-sm text-white font-medium">/api/qr</code>
+          <span class="text-xs text-gray-500">Get QR code (base64) for scanning</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <p class="text-xs text-gray-500 mb-3">Returns the current QR code as a base64 data URI. Auth not required.</p>
+          <button onclick="runTest('GET','/api/qr',null,'resp-qr')" class="btn-test">▶ Run</button>
+          <div id="resp-qr" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── SEND MESSAGES ─────────────────────── -->
+  <section id="cat-send">
+    <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+      <span class="w-1 h-5 rounded bg-blue-500 inline-block"></span> Send Messages
+    </h2>
+    <div class="space-y-3">
+
+      <!-- POST /api/send -->
+      <div class="endpoint-card card rounded-xl" id="ep-send">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('send')">
+          <span class="method-POST tag border">POST</span>
+          <code class="text-sm text-white font-medium">/api/send</code>
+          <span class="text-xs text-gray-500">Send a text message</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="space-y-2">
+              <div><label class="field-label">to <span class="text-red-400">*</span></label><input id="send-to" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="field-label">message <span class="text-red-400">*</span></label><textarea id="send-msg" rows="3" placeholder="Hello World!" class="input-field w-full px-3 py-1.5 rounded-lg text-sm mono"></textarea></div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-gray-400 mb-1">Request Body</div>
+              <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 h-full"><code>POST /api/send
+X-API-Key: &lt;key&gt;
+Content-Type: application/json
+
+{
+  "to": "628123456789",
+  "message": "Hello!"
+}</code></pre>
+            </div>
+          </div>
+          <button onclick="sendText()" class="btn-test">▶ Run</button>
+          <div id="resp-send" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <!-- POST /api/send/bulk -->
+      <div class="endpoint-card card rounded-xl" id="ep-bulk">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('bulk')">
+          <span class="method-POST tag border">POST</span>
+          <code class="text-sm text-white font-medium">/api/send/bulk</code>
+          <span class="text-xs text-gray-500">Send to multiple numbers</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="space-y-2">
+              <div><label class="field-label">numbers <span class="text-red-400">*</span> <span class="text-gray-600">(one per line)</span></label>
+                <textarea id="bulk-nums" rows="4" placeholder="628111&#10;628222&#10;628333" class="input-field w-full px-3 py-1.5 rounded-lg text-sm mono"></textarea></div>
+              <div><label class="field-label">message <span class="text-red-400">*</span></label><textarea id="bulk-msg" rows="2" placeholder="Broadcast message" class="input-field w-full px-3 py-1.5 rounded-lg text-sm mono"></textarea></div>
+              <div><label class="field-label">delay (ms)</label><input id="bulk-delay" type="number" value="1000" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-gray-400 mb-1">Request Body</div>
+              <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300"><code>POST /api/send/bulk
+
+{
+  "numbers": ["628111","628222"],
+  "message": "Hello all!",
+  "delay": 1000
+}</code></pre>
+            </div>
+          </div>
+          <button onclick="sendBulk()" class="btn-test">▶ Run</button>
+          <div id="resp-bulk" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <!-- POST /api/send/media -->
+      <div class="endpoint-card card rounded-xl" id="ep-media">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('media')">
+          <span class="method-POST tag border">POST</span>
+          <code class="text-sm text-white font-medium">/api/send/media</code>
+          <span class="text-xs text-gray-500">Send image / video / audio / document</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="space-y-2">
+              <div><label class="field-label">to <span class="text-red-400">*</span></label><input id="media-to" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="field-label">mediaUrl <span class="text-red-400">*</span></label><input id="media-url" type="text" placeholder="https://example.com/image.jpg" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="field-label">caption</label><input id="media-cap" type="text" placeholder="Optional caption" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-gray-400 mb-1">Request Body</div>
+              <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300"><code>POST /api/send/media
+
+{
+  "to": "628123456789",
+  "mediaUrl": "https://…/img.jpg",
+  "caption": "Check this out!"
+}</code></pre>
+            </div>
+          </div>
+          <button onclick="sendMedia()" class="btn-test">▶ Run</button>
+          <div id="resp-media" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <!-- POST /api/send/typing -->
+      <div class="endpoint-card card rounded-xl" id="ep-typing">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('typing')">
+          <span class="method-POST tag border">POST</span>
+          <code class="text-sm text-white font-medium">/api/send/typing</code>
+          <span class="text-xs text-gray-500">Send typing indicator</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="space-y-2 mb-4 max-w-xs">
+            <div><label class="field-label">to <span class="text-red-400">*</span></label><input id="typing-to" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="field-label">duration (ms)</label><input id="typing-dur" type="number" value="3000" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          </div>
+          <button onclick="sendTyping()" class="btn-test">▶ Run</button>
+          <div id="resp-typing" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── CONTACTS & CHATS ─────────────────────── -->
+  <section id="cat-contacts">
+    <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+      <span class="w-1 h-5 rounded bg-purple-500 inline-block"></span> Contacts &amp; Chats
+    </h2>
+    <div class="space-y-3">
+
+      <div class="endpoint-card card rounded-xl" id="ep-chats">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('chats')">
+          <span class="method-GET tag border">GET</span>
+          <code class="text-sm text-white font-medium">/api/chats</code>
+          <span class="text-xs text-gray-500">Get recent chats</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-3"><label class="field-label">limit</label><input id="chats-limit" type="number" value="20" class="input-field w-32 px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="runTest('GET','/api/chats?limit='+document.getElementById('chats-limit').value,null,'resp-chats',true)" class="btn-test">▶ Run</button>
+          <div id="resp-chats" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <div class="endpoint-card card rounded-xl" id="ep-contacts">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('contacts')">
+          <span class="method-GET tag border">GET</span>
+          <code class="text-sm text-white font-medium">/api/contacts</code>
+          <span class="text-xs text-gray-500">Get all contacts</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <button onclick="runTest('GET','/api/contacts',null,'resp-contacts',true)" class="btn-test">▶ Run</button>
+          <div id="resp-contacts" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <div class="endpoint-card card rounded-xl" id="ep-messages">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('messages')">
+          <span class="method-GET tag border">GET</span>
+          <code class="text-sm text-white font-medium">/api/messages/:chatId</code>
+          <span class="text-xs text-gray-500">Get messages from a chat</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="flex gap-2 mb-4">
+            <div class="flex-1"><label class="field-label">chatId <span class="text-red-400">*</span></label><input id="msg-chatid" type="text" placeholder="628123456789@c.us" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="field-label">limit</label><input id="msg-limit" type="number" value="20" class="input-field w-24 px-3 py-1.5 rounded-lg text-sm"/></div>
+          </div>
+          <button onclick="runTest('GET','/api/messages/'+encodeURIComponent(document.getElementById('msg-chatid').value)+'?limit='+document.getElementById('msg-limit').value,null,'resp-messages',true)" class="btn-test">▶ Run</button>
+          <div id="resp-messages" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <div class="endpoint-card card rounded-xl" id="ep-check">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('check')">
+          <span class="method-GET tag border">GET</span>
+          <code class="text-sm text-white font-medium">/api/check/:number</code>
+          <span class="text-xs text-gray-500">Check if number is on WhatsApp</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-4 max-w-xs"><label class="field-label">number <span class="text-red-400">*</span></label><input id="check-num" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="runTest('GET','/api/check/'+document.getElementById('check-num').value,null,'resp-check',true)" class="btn-test">▶ Run</button>
+          <div id="resp-check" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── WEBHOOKS ─────────────────────── -->
+  <section id="cat-webhooks">
+    <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+      <span class="w-1 h-5 rounded bg-yellow-500 inline-block"></span> Webhooks
+      <span class="text-xs text-gray-500 font-normal ml-2">— per device_id support. Use <code class="bg-black/30 px-1 rounded">*</code> to receive all devices.</span>
+    </h2>
+    <div class="space-y-3">
+
+      <div class="endpoint-card card rounded-xl" id="ep-wh-list">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('wh-list')">
+          <span class="method-GET tag border">GET</span>
+          <code class="text-sm text-white font-medium">/api/webhooks</code>
+          <span class="text-xs text-gray-500">List all webhooks</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <button onclick="runTest('GET','/api/webhooks',null,'resp-wh-list',true)" class="btn-test">▶ Run</button>
+          <div id="resp-wh-list" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <div class="endpoint-card card rounded-xl" id="ep-wh-add">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('wh-add')">
+          <span class="method-POST tag border">POST</span>
+          <code class="text-sm text-white font-medium">/api/webhooks</code>
+          <span class="text-xs text-gray-500">Register a new webhook</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div class="space-y-2">
+              <div><label class="field-label">url <span class="text-red-400">*</span></label><input id="wh-url" type="text" placeholder="https://your.server/hook" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="field-label">device_id</label><input id="wh-device" type="text" placeholder="* (all devices)" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="field-label">events <span class="text-gray-500">(comma-separated)</span></label><input id="wh-events" type="text" value="message,message_sent" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="field-label">description</label><input id="wh-desc" type="text" placeholder="Optional label" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            </div>
+            <div>
+              <div class="text-xs font-semibold text-gray-400 mb-1">Payload</div>
+              <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300"><code>POST /api/webhooks
+
+{
+  "url": "https://…/hook",
+  "device_id": "*",
+  "events": ["message","message_sent"],
+  "description": "My hook"
+}
+
+Available events:
+• message         • message_sent
+• message_ack     • typing
+• connected       • disconnected
+• qr              • *  (all)</code></pre>
+            </div>
+          </div>
+          <button onclick="addWebhook()" class="btn-test">▶ Run</button>
+          <div id="resp-wh-add" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <div class="endpoint-card card rounded-xl" id="ep-wh-del">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('wh-del')">
+          <span class="method-DELETE tag border">DELETE</span>
+          <code class="text-sm text-white font-medium">/api/webhooks/:id</code>
+          <span class="text-xs text-gray-500">Delete a webhook</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-4 max-w-sm"><label class="field-label">webhook id <span class="text-red-400">*</span></label><input id="wh-del-id" type="text" placeholder="uuid" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="runTest('DELETE','/api/webhooks/'+document.getElementById('wh-del-id').value,null,'resp-wh-del',true)" class="btn-test method-DELETE-btn">▶ Run</button>
+          <div id="resp-wh-del" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+      <div class="endpoint-card card rounded-xl" id="ep-wh-toggle">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('wh-toggle')">
+          <span class="method-PATCH tag border">PATCH</span>
+          <code class="text-sm text-white font-medium">/api/webhooks/:id/toggle</code>
+          <span class="text-xs text-gray-500">Enable / disable webhook</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="flex gap-2 mb-4">
+            <div class="flex-1"><label class="field-label">webhook id <span class="text-red-400">*</span></label><input id="wh-tog-id" type="text" placeholder="uuid" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="field-label">active</label><select id="wh-tog-active" class="input-field px-3 py-1.5 rounded-lg text-sm"><option value="true">true</option><option value="false">false</option></select></div>
+          </div>
+          <button onclick="toggleWebhook()" class="btn-test">▶ Run</button>
+          <div id="resp-wh-toggle" class="mt-3 hidden"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ─── DEVICE CONTROL ─────────────────────── -->
+  <section id="cat-device">
+    <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+      <span class="w-1 h-5 rounded bg-red-500 inline-block"></span> Device Control
+    </h2>
+    <div class="space-y-3">
+      <div class="endpoint-card card rounded-xl" id="ep-logout">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('logout')">
+          <span class="method-POST tag border">POST</span>
+          <code class="text-sm text-white font-medium">/api/logout</code>
+          <span class="text-xs text-gray-500">Logout from WhatsApp</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <p class="text-xs text-yellow-400 mb-3">⚠ This will disconnect the WhatsApp session.</p>
+          <button onclick="runTest('POST','/api/logout',{},  'resp-logout',true)" class="btn-test">▶ Run</button>
+          <div id="resp-logout" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="endpoint-card card rounded-xl" id="ep-restart">
+        <div class="endpoint-header flex items-center gap-3 px-4 py-3" onclick="toggleEp('restart')">
+          <span class="method-POST tag border">POST</span>
+          <code class="text-sm text-white font-medium">/api/restart</code>
+          <span class="text-xs text-gray-500">Restart WhatsApp service</span>
+          <svg class="chevron w-4 h-4 text-gray-500 ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <button onclick="runTest('POST','/api/restart',{},  'resp-restart',true)" class="btn-test">▶ Run</button>
+          <div id="resp-restart" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── WEBSOCKET ─────────────────────── -->
+  <section id="cat-ws">
+    <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+      <span class="w-1 h-5 rounded bg-teal-500 inline-block"></span> WebSocket
+    </h2>
+    <div class="card rounded-xl border border-slate-700/40 p-5 space-y-4">
+      <div>
+        <div class="text-xs font-semibold text-gray-400 mb-1">Connect URL</div>
+        <code id="ws-url-display" class="text-sm text-blue-400 bg-black/30 px-3 py-1.5 rounded-lg block"></code>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div class="text-xs font-semibold text-gray-400 mb-2">Client → Server Actions</div>
+          <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300"><code>{ "action": "ping" }
+{ "action": "get_status" }
+{ "action": "get_qr" }</code></pre>
+        </div>
+        <div>
+          <div class="text-xs font-semibold text-gray-400 mb-2">Server → Client Events</div>
+          <pre class="bg-black/40 rounded-lg p-3 text-xs text-blue-300"><code>status | qr | ready | disconnected
+message | message_sent | message_ack
+typing | authenticated | pong</code></pre>
+        </div>
+      </div>
+      <div>
+        <div class="text-xs font-semibold text-gray-400 mb-2">Live Test</div>
+        <div class="flex gap-2 mb-2">
+          <button id="ws-connect-btn" onclick="wsConnect()" class="btn-test">Connect</button>
+          <button onclick="wsSend()" class="btn-test" id="ws-send-btn" disabled>Send</button>
+          <select id="ws-action" class="input-field px-2 py-1.5 rounded-lg text-sm">
+            <option value="ping">ping</option>
+            <option value="get_status">get_status</option>
+            <option value="get_qr">get_qr</option>
+          </select>
+        </div>
+        <div id="ws-log" class="bg-black/40 rounded-lg p-3 text-xs font-mono h-48 overflow-y-auto space-y-1">
+          <div class="text-gray-600">Not connected.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Webhook Payload Reference -->
+  <section>
+    <h2 class="text-base font-bold text-white mb-3 flex items-center gap-2">
+      <span class="w-1 h-5 rounded bg-orange-500 inline-block"></span> Webhook Payload Reference
+    </h2>
+    <div class="card rounded-xl border border-slate-700/40 p-5">
+      <p class="text-xs text-gray-500 mb-3">Every webhook delivery sends a POST with this structure:</p>
+      <pre class="bg-black/40 rounded-lg p-4 text-xs text-green-300 overflow-x-auto"><code>{
+  "event":     "message",
+  "device_id": "wa-gateway-session",
+  "timestamp": "2025-01-01T00:00:00.000Z",
+  "data": {
+    "id":       "XXXXXXX",
+    "from":     "628123456789@c.us",
+    "to":       "628987654321@c.us",
+    "body":     "Hello!",
+    "type":     "chat",
+    "isGroup":  false,
+    "timestamp": 1700000000
+  }
+}</code></pre>
+      <div class="mt-4">
+        <div class="text-xs font-semibold text-gray-400 mb-2">Security — HMAC Signature</div>
+        <p class="text-xs text-gray-500 mb-2">If a <code class="bg-black/30 px-1 rounded text-yellow-300">secret</code> is set on the webhook, the delivery includes:</p>
+        <pre class="bg-black/40 rounded-lg p-3 text-xs text-yellow-300"><code>X-WA-Signature: sha256=HMAC(secret, body)</code></pre>
+      </div>
+    </div>
+  </section>
+
+</main>
+</div>
+
+<style>
+.btn-test{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;font-size:.75rem;font-weight:600;padding:6px 16px;border-radius:8px;transition:all .2s;cursor:pointer}
+.btn-test:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-test:active{transform:translateY(0)}
+.btn-test:disabled{opacity:.4;cursor:not-allowed;transform:none}
+.field-label{display:block;font-size:.7rem;font-weight:600;color:var(--t2);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em}
+</style>
+
+<script>
+// ─── Config ──────────────────────────────────────────────────────────────────
+const BASE = window.location.origin;
+let apiKey = localStorage.getItem('wa_api_key') || '';
+let ws = null;
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('sidebar-apikey').value = apiKey;
+  document.getElementById('base-url-display').textContent = BASE + '/api';
+  document.getElementById('ws-url-display').textContent = BASE.replace('http','ws') + '/ws';
+  updateKeyStatus();
+  loadMe();
+});
+
+function saveKey(v) {
+  apiKey = v.trim();
+  localStorage.setItem('wa_api_key', apiKey);
+  updateKeyStatus();
+}
+
+function updateKeyStatus() {
+  const el = document.getElementById('key-status');
+  if (apiKey) {
+    el.textContent = '✓ Key set';
+    el.className = 'mt-1 text-xs text-blue-400';
+  } else {
+    el.textContent = 'Not set';
+    el.className = 'mt-1 text-xs text-gray-600';
+  }
+}
+
+function getHeaders(withAuth = true) {
+  const h = { 'Content-Type': 'application/json' };
+  if (withAuth && apiKey) h['X-API-Key'] = apiKey;
+  return h;
+}
+
+// ─── Toggle endpoint panels ───────────────────────────────────────────────────
+function toggleEp(id) {
+  const card = document.getElementById('ep-' + id);
+  const body = card.querySelector('.ep-body');
+  const chevron = card.querySelector('.chevron');
+  const open = !body.classList.contains('hidden');
+  body.classList.toggle('hidden', open);
+  chevron.classList.toggle('open', !open);
+  card.classList.toggle('open', !open);
+}
+
+// ─── Generic test runner ─────────────────────────────────────────────────────
+async function runTest(method, url, body, respId, auth = false) {
+  const el = document.getElementById(respId);
+  el.classList.remove('hidden');
+  el.innerHTML = '<div class="text-xs text-gray-500 animate-pulse">Sending request...</div>';
+
+  const start = Date.now();
+  try {
+    const opts = {
+      method,
+      headers: getHeaders(auth),
+    };
+    if (body && method !== 'GET') opts.body = JSON.stringify(body);
+
+    const r = await fetch(BASE + url, opts);
+    const ms = Date.now() - start;
+    let data;
+    const ct = r.headers.get('content-type') || '';
+    if (ct.includes('application/json')) data = await r.json();
+    else data = await r.text();
+
+    const statusClass = r.status < 300 ? 'status-2xx' : r.status < 500 ? 'status-4xx' : 'status-5xx';
+    el.innerHTML = `
+      <div class="flex items-center gap-3 mb-2">
+        <span class="text-xs font-bold font-mono ${statusClass}">${r.status} ${r.statusText}</span>
+        <span class="text-xs text-gray-600">${ms}ms</span>
+        <span class="text-xs text-gray-600 ml-auto">${new Date().toLocaleTimeString()}</span>
+      </div>
+      <div class="relative response-area">
+        <pre class="bg-black/50 rounded-lg p-3 text-xs text-green-200 overflow-x-auto whitespace-pre-wrap">${escHtml(typeof data === 'object' ? JSON.stringify(data, null, 2) : data)}</pre>
+      </div>`;
+  } catch (e) {
+    el.innerHTML = `<div class="text-xs text-red-400 bg-red-900/20 rounded-lg p-3">Error: ${escHtml(e.message)}</div>`;
+  }
+}
+
+function escHtml(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── Specific tests ───────────────────────────────────────────────────────────
+async function sendText() {
+  const to  = document.getElementById('send-to').value.trim();
+  const msg = document.getElementById('send-msg').value.trim();
+  if (!to || !msg) return alert('Fill in "to" and "message"');
+  await runTest('POST', '/api/send', { to, message: msg }, 'resp-send', true);
+}
+
+async function sendBulk() {
+  const nums = document.getElementById('bulk-nums').value.trim().split('\n').map(n=>n.trim()).filter(Boolean);
+  const msg  = document.getElementById('bulk-msg').value.trim();
+  const delay= parseInt(document.getElementById('bulk-delay').value) || 1000;
+  if (!nums.length || !msg) return alert('Fill in numbers and message');
+  await runTest('POST', '/api/send/bulk', { numbers: nums, message: msg, delay }, 'resp-bulk', true);
+}
+
+async function sendMedia() {
+  const to  = document.getElementById('media-to').value.trim();
+  const url = document.getElementById('media-url').value.trim();
+  const cap = document.getElementById('media-cap').value.trim();
+  if (!to || !url) return alert('Fill in "to" and "mediaUrl"');
+  await runTest('POST', '/api/send/media', { to, mediaUrl: url, caption: cap }, 'resp-media', true);
+}
+
+async function sendTyping() {
+  const to  = document.getElementById('typing-to').value.trim();
+  const dur = parseInt(document.getElementById('typing-dur').value) || 3000;
+  if (!to) return alert('Fill in "to"');
+  await runTest('POST', '/api/send/typing', { to, duration: dur }, 'resp-typing', true);
+}
+
+async function addWebhook() {
+  const url    = document.getElementById('wh-url').value.trim();
+  const device = document.getElementById('wh-device').value.trim() || '*';
+  const events = document.getElementById('wh-events').value.split(',').map(e=>e.trim()).filter(Boolean);
+  const desc   = document.getElementById('wh-desc').value.trim();
+  if (!url) return alert('Fill in webhook URL');
+  await runTest('POST', '/api/webhooks', { url, device_id: device, events, description: desc }, 'resp-wh-add', true);
+}
+
+async function toggleWebhook() {
+  const id     = document.getElementById('wh-tog-id').value.trim();
+  const active = document.getElementById('wh-tog-active').value === 'true';
+  if (!id) return alert('Fill in webhook ID');
+  await runTest('PATCH', '/api/webhooks/' + id + '/toggle', { active }, 'resp-wh-toggle', true);
+}
+
+// ─── WebSocket Live Test ──────────────────────────────────────────────────────
+function wsLog(msg, cls = 'text-gray-300') {
+  const log = document.getElementById('ws-log');
+  const d = document.createElement('div');
+  d.className = `text-xs font-mono ${cls}`;
+  d.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+}
+
+function wsConnect() {
+  const btn = document.getElementById('ws-connect-btn');
+  if (ws && ws.readyState < 2) {
+    ws.close();
+    return;
+  }
+  const url = BASE.replace('http', 'ws') + '/ws';
+  ws = new WebSocket(url);
+  btn.textContent = 'Connecting...';
+  btn.disabled = true;
+
+  ws.onopen = () => {
+    wsLog('Connected to ' + url, 'text-green-400');
+    btn.textContent = 'Disconnect';
+    btn.disabled = false;
+    document.getElementById('ws-send-btn').disabled = false;
+  };
+  ws.onmessage = (e) => {
+    try {
+      const d = JSON.parse(e.data);
+      wsLog('← ' + d.event + ': ' + JSON.stringify(d.data).slice(0, 120), 'text-blue-300');
+    } catch { wsLog('← ' + e.data, 'text-blue-300'); }
+  };
+  ws.onclose = () => {
+    wsLog('Disconnected', 'text-red-400');
+    btn.textContent = 'Connect';
+    btn.disabled = false;
+    document.getElementById('ws-send-btn').disabled = true;
+    ws = null;
+  };
+  ws.onerror = () => wsLog('Connection error', 'text-red-400');
+}
+
+function wsSend() {
+  if (!ws || ws.readyState !== 1) return;
+  const action = document.getElementById('ws-action').value;
+  const msg = JSON.stringify({ action });
+  ws.send(msg);
+  wsLog('→ ' + msg, 'text-yellow-300');
+}
+
+// ─── User badge + logout ──────────────────────────────────────────────────────
+async function loadMe() {
+  try {
+    const r = await fetch('/auth/me');
+    const d = await r.json();
+    if (d.success) {
+      const el = document.getElementById('user-badge');
+      const typeColors = { center:'text-blue-400 bg-blue-900/30', sender:'text-indigo-400 bg-indigo-900/30', none:'text-gray-400 bg-gray-800/40' };
+      document.getElementById('user-badge-name').textContent = d.data.username;
+      const typeEl = document.getElementById('user-badge-type');
+      typeEl.textContent = d.data.type;
+      typeEl.className = `text-xs font-semibold px-1.5 py-0.5 rounded ${typeColors[d.data.type] || typeColors.none}`;
+      el.classList.remove('hidden');
+      el.classList.add('flex');
+    }
+  } catch {}
+}
+
+async function doLogout() {
+  if (!await openConfirmModal({ title: 'Logout Dashboard', message: 'Kamu akan keluar dari dashboard ini.', confirmText: 'Logout', tone: 'warning' })) return;
+  try {
+    const r = await fetch('/auth/logout', { method: 'POST' });
+    const d = await r.json();
+    window.location.href = d.redirect || '/login';
+  } catch { window.location.href = '/login'; }
+}
+// ─── Theme Toggle ────────────────────────────────────────────────────────────
+function applyTheme(light) {
+  if (light) {
+    document.documentElement.classList.add('light');
+    document.getElementById('theme-icon-dark').classList.add('hidden');
+    document.getElementById('theme-icon-light').classList.remove('hidden');
+  } else {
+    document.documentElement.classList.remove('light');
+    document.getElementById('theme-icon-dark').classList.remove('hidden');
+    document.getElementById('theme-icon-light').classList.add('hidden');
+  }
+}
+function toggleTheme() {
+  const isLight = !document.documentElement.classList.contains('light');
+  localStorage.setItem('wa-theme', isLight ? 'light' : 'dark');
+  applyTheme(isLight);
+}
+applyTheme(localStorage.getItem('wa-theme') === 'light');
+</script>
+</body>
+</html>

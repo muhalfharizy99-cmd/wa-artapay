@@ -1,0 +1,66 @@
+<section id="sec-testing" class="p-6 animate-fade-in hidden">
+  <div class="flex items-center justify-between mb-5 gap-3 flex-wrap">
+    <div>
+      <h1 class="text-xl font-bold text-white">Message Testing</h1>
+      <p class="text-xs text-gray-500 mt-0.5">Test kirim WhatsApp: text, media, sticker, typing, reaction</p>
+    </div>
+    <button onclick="initTestingSection(true)" class="flex items-center gap-1.5 text-xs text-gray-500 hover:text-green-400 border border-slate-700/50 hover:border-green-800/40 px-3 py-1.5 rounded-lg transition-all">
+      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+      Refresh Devices
+    </button>
+  </div>
+
+  <div class="card rounded-xl border border-slate-700/40 p-4 mb-4">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div>
+        <label class="text-xs text-gray-500 mb-1.5 block">Device</label>
+        <select id="test-device-select" onchange="testSelectDevice(this.value)" class="input-field w-full px-2.5 py-2 rounded-lg text-xs text-white">
+          <option value="">Select device</option>
+        </select>
+      </div>
+      <div class="md:col-span-2">
+        <label class="text-xs text-gray-500 mb-1.5 block">API Key</label>
+        <input id="test-api-key" type="text" placeholder="Auto-filled from selected device (can edit manually)" oninput="testSetApiKey(this.value)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      </div>
+    </div>
+    <div id="test-key-status" class="text-xs text-gray-500 mt-2">No API key selected</div>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+    <div class="card rounded-xl border border-slate-700/40 p-4 space-y-3">
+      <div class="text-sm font-semibold text-white">Send Text</div>
+      <input id="test-text-to" type="text" placeholder="To (628xxxx or JID)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <textarea id="test-text-message" rows="3" placeholder="Message text" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600"></textarea>
+      <input id="test-text-quoted" type="text" placeholder="Quoted Message ID (optional)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <button onclick="testSendText()" class="btn-primary px-3 py-2 rounded-lg text-xs font-semibold">Send Text</button>
+    </div>
+
+    <div class="card rounded-xl border border-slate-700/40 p-4 space-y-3">
+      <div class="text-sm font-semibold text-white">Send Media / Sticker</div>
+      <input id="test-media-to" type="text" placeholder="To (628xxxx or JID)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <input id="test-media-url" type="text" placeholder="Media URL (optional if upload file)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <input id="test-media-file" type="file" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white" />
+      <input id="test-media-caption" type="text" placeholder="Caption (optional)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <input id="test-media-quoted" type="text" placeholder="Quoted Message ID (optional)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <label class="flex items-center gap-2 text-xs text-gray-400"><input id="test-media-sticker" type="checkbox" class="accent-yellow-500" /> Send as Sticker</label>
+      <button onclick="testSendMedia()" class="btn-primary px-3 py-2 rounded-lg text-xs font-semibold">Send Media</button>
+    </div>
+
+    <div class="card rounded-xl border border-slate-700/40 p-4 space-y-3">
+      <div class="text-sm font-semibold text-white">Typing & Reaction</div>
+      <input id="test-typing-to" type="text" placeholder="To for typing" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <input id="test-typing-duration" type="number" value="3000" min="500" step="100" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white" />
+      <button onclick="testSendTyping()" class="btn-primary px-3 py-2 rounded-lg text-xs font-semibold">Send Typing</button>
+      <div class="border-t border-slate-700/40 pt-3"></div>
+      <input id="test-reaction-chatid" type="text" placeholder="Chat ID (ex: 628xxx@c.us)" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <input id="test-reaction-msgid" type="text" placeholder="Message ID" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <input id="test-reaction-emoji" type="text" value="❤️" placeholder="Emoji" class="input-field w-full px-3 py-2 rounded-lg text-xs text-white placeholder-gray-600" />
+      <button onclick="testSendReaction()" class="btn-primary px-3 py-2 rounded-lg text-xs font-semibold">Send Reaction</button>
+    </div>
+  </div>
+
+  <div class="card rounded-xl border border-slate-700/40 p-4 mt-4">
+    <div class="text-sm font-semibold text-white mb-2">Response</div>
+    <pre id="test-response" class="bg-slate-900 border border-slate-700/50 rounded-lg p-3 text-xs overflow-x-auto whitespace-pre-wrap max-h-80 text-gray-300">No request yet</pre>
+  </div>
+</section>

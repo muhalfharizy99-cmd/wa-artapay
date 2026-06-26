@@ -1,0 +1,457 @@
+<section id="sec-docs" class="p-6 animate-fade-in hidden">
+
+  <!-- Header -->
+  <div class="flex items-center justify-between mb-5">
+    <div>
+      <h1 class="text-xl font-bold text-white">WhatsApp Gateway ArtaPay</h1>
+    </div>
+    <code id="docs-base-url" class="text-xs text-green-400 font-mono bg-black/30 px-3 py-1.5 rounded-lg border border-slate-700/40"></code>
+  </div>
+
+  <!-- API Key Panel -->
+  <div class="card rounded-xl border border-slate-700/50 p-4 mb-5">
+    <div class="flex items-center gap-2 mb-3">
+      <svg class="w-4 h-4 text-yellow-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
+      <span class="text-xs font-semibold text-white">API Key</span>
+      <span id="docs-key-status" class="text-xs text-gray-600 ml-1">— not set</span>
+    </div>
+    <div class="flex gap-2">
+      <select id="docs-device-sel" onchange="docsSelectDevice(this.value)" class="input-field px-3 py-2 rounded-lg text-sm flex-shrink-0">
+        <option value="">— pick device —</option>
+      </select>
+      <input id="docs-apikey" type="text" placeholder="Paste API key manually…" oninput="docsSaveKey(this.value)"
+        class="input-field flex-1 px-3 py-2 rounded-lg text-sm font-mono"/>
+      <button onclick="docsCopyKey()" title="Copy key" class="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg border border-slate-700/50 text-gray-500 hover:text-green-400 hover:border-green-800/40 transition-all">
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+      </button>
+    </div>
+    <div class="mt-2 text-xs text-gray-600">Header: <code class="text-gray-400">X-API-Key: &lt;key&gt;</code> &nbsp;·&nbsp; Query: <code class="text-gray-400">?apikey=&lt;key&gt;</code></div>
+  </div>
+
+  <!-- Quick-jump nav -->
+  <div class="flex flex-wrap gap-1.5 mb-6">
+    <a href="#api-cat-status"   class="text-xs px-2.5 py-1 rounded-full border border-green-800/40  text-green-400  hover:bg-green-900/20  transition-all">📡 Status & QR</a>
+    <a href="#api-cat-send"     class="text-xs px-2.5 py-1 rounded-full border border-blue-800/40   text-blue-400   hover:bg-blue-900/20   transition-all">💬 Send</a>
+    <a href="#api-cat-contacts" class="text-xs px-2.5 py-1 rounded-full border border-purple-800/40 text-purple-400 hover:bg-purple-900/20 transition-all">👥 Contacts</a>
+    <a href="#api-cat-blast"   class="text-xs px-2.5 py-1 rounded-full border border-orange-800/40 text-orange-400 hover:bg-orange-900/20 transition-all">⚡ Blast</a>
+    <a href="#api-cat-webhooks" class="text-xs px-2.5 py-1 rounded-full border border-yellow-800/40 text-yellow-400 hover:bg-yellow-900/20 transition-all">🔗 Webhooks</a>
+    <a href="#api-cat-device"   class="text-xs px-2.5 py-1 rounded-full border border-red-800/40    text-red-400    hover:bg-red-900/20    transition-all">⚙️ Device</a>
+    <a href="#api-cat-ws"       class="text-xs px-2.5 py-1 rounded-full border border-teal-800/40   text-teal-400   hover:bg-teal-900/20   transition-all">🌐 WebSocket</a>
+  </div>
+
+  <!-- ─── STATUS & QR ────────────────────────────────────── -->
+  <div id="api-cat-status" class="mb-8">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-green-500 inline-block"></span>Status &amp; QR</h2>
+    <div class="space-y-2">
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-status">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('status')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/status</code><span class="text-xs text-gray-500">Get connection status</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 mb-3 overflow-x-auto"><code>{ "success": true, "data": { "status": "ready", "info": { "pushname": "…", "number": "…" } } }</code></pre>
+          <button onclick="docsRun('GET','/api/status',null,'resp-status')" class="doc-btn">▶ Run</button>
+          <div id="resp-status" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-qr">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('qr')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/qr</code><span class="text-xs text-gray-500">Get QR code (base64)</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <p class="text-xs text-gray-500 mb-3">Returns base64 QR. No auth required.</p>
+          <button onclick="docsRun('GET','/api/qr',null,'resp-qr')" class="doc-btn">▶ Run</button>
+          <div id="resp-qr" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── SEND MESSAGES ─────────────────────────────────── -->
+  <div id="api-cat-send" class="mb-8">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-blue-500 inline-block"></span>Send Messages</h2>
+    <div class="space-y-2">
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-send">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('send')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/send</code><span class="text-xs text-gray-500">Send text message</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+            <div class="space-y-2">
+              <div><label class="doc-lbl">to <span class="text-red-400">*</span></label><input id="send-to" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="doc-lbl">message <span class="text-red-400">*</span></label><textarea id="send-msg" rows="3" placeholder="Hello!" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"></textarea></div>
+              <div><label class="doc-lbl">quotedMessageId</label><input id="send-quoted-id" type="text" placeholder="Optional reply target msg id" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"/></div>
+            </div>
+            <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto self-start"><code>POST /api/send
+X-API-Key: &lt;key&gt;
+
+{ "to": "628…", "message": "Hello!", "quotedMessageId": "OPTIONAL_MSG_ID" }</code></pre>
+          </div>
+          <button onclick="docsSendText()" class="doc-btn">▶ Run</button>
+          <div id="resp-send" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-bulk">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('bulk')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/send/bulk</code><span class="text-xs text-gray-500">Send to multiple numbers</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="space-y-2 mb-3 max-w-sm">
+            <div><label class="doc-lbl">numbers <span class="text-red-400">*</span> <span class="text-gray-600">(one per line)</span></label><textarea id="bulk-nums" rows="3" placeholder="628111&#10;628222" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"></textarea></div>
+            <div><label class="doc-lbl">message <span class="text-red-400">*</span></label><textarea id="bulk-msg" rows="2" placeholder="Broadcast!" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"></textarea></div>
+            <div><label class="doc-lbl">delay (ms)</label><input id="bulk-delay" type="number" value="1000" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          </div>
+          <button onclick="docsSendBulk()" class="doc-btn">▶ Run</button>
+          <div id="resp-bulk" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-media">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('media')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/send/media</code><span class="text-xs text-gray-500">Send image / video / document</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="space-y-2 mb-3 max-w-sm">
+            <div><label class="doc-lbl">to <span class="text-red-400">*</span></label><input id="media-to" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">mediaUrl <span class="text-red-400">*</span></label><input id="media-url" type="text" placeholder="https://…/image.jpg" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">caption</label><input id="media-cap" type="text" placeholder="Optional caption" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">quotedMessageId</label><input id="media-quoted-id" type="text" placeholder="Optional reply target msg id" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"/></div>
+          </div>
+          <button onclick="docsSendMedia()" class="doc-btn">▶ Run</button>
+          <div id="resp-media" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-typing">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('typing')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/send/typing</code><span class="text-xs text-gray-500">Send typing indicator</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="flex gap-2 mb-3 max-w-sm">
+            <div class="flex-1"><label class="doc-lbl">to <span class="text-red-400">*</span></label><input id="typing-to" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">duration (ms)</label><input id="typing-dur" type="number" value="3000" class="input-field w-28 px-3 py-1.5 rounded-lg text-sm"/></div>
+          </div>
+          <button onclick="docsSendTyping()" class="doc-btn">▶ Run</button>
+          <div id="resp-typing" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-reaction">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('reaction')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/send/reaction</code><span class="text-xs text-gray-500">Send reaction to a message</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+            <div class="space-y-2 max-w-sm">
+              <div><label class="doc-lbl">chatId <span class="text-red-400">*</span></label><input id="reaction-chatid" type="text" placeholder="628123456789 atau 628123456789@c.us" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"/></div>
+              <div><label class="doc-lbl">messageId <span class="text-red-400">*</span></label><input id="reaction-msgid" type="text" placeholder="WA message id" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"/></div>
+              <div><label class="doc-lbl">emoji <span class="text-red-400">*</span></label><input id="reaction-emoji" type="text" value="❤️" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            </div>
+            <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto self-start"><code>POST /api/send/reaction
+X-API-Key: &lt;key&gt;
+
+{ "chatId": "628…", "messageId": "MSG_ID", "emoji": "❤️" }</code></pre>
+          </div>
+          <button onclick="docsSendReaction()" class="doc-btn">▶ Run</button>
+          <div id="resp-reaction" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── CONTACTS & CHATS ──────────────────────────────── -->
+  <div id="api-cat-contacts" class="mb-8">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-purple-500 inline-block"></span>Contacts &amp; Chats</h2>
+    <div class="space-y-2">
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-chats">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('chats')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/chats</code><span class="text-xs text-gray-500">Get recent chats</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-3"><label class="doc-lbl">limit</label><input id="chats-limit" type="number" value="20" class="input-field w-24 px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="docsRun('GET','/api/chats?limit='+document.getElementById('chats-limit').value,null,'resp-chats',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-chats" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-contacts">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('contacts')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/contacts</code><span class="text-xs text-gray-500">Get all contacts</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <button onclick="docsRun('GET','/api/contacts',null,'resp-contacts',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-contacts" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-messages-ep">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('messages-ep')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/messages/:chatId</code><span class="text-xs text-gray-500">Get chat messages</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="flex gap-2 mb-3 max-w-sm">
+            <div class="flex-1"><label class="doc-lbl">chatId <span class="text-red-400">*</span></label><input id="msg-chatid" type="text" placeholder="628123@c.us" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">limit</label><input id="msg-limit" type="number" value="20" class="input-field w-20 px-3 py-1.5 rounded-lg text-sm"/></div>
+          </div>
+          <button onclick="docsRun('GET','/api/messages/'+encodeURIComponent(document.getElementById('msg-chatid').value)+'?limit='+document.getElementById('msg-limit').value,null,'resp-messages',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-messages" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-check">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('check')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/check/:number</code><span class="text-xs text-gray-500">Check if number is on WhatsApp</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-3 max-w-xs"><label class="doc-lbl">number <span class="text-red-400">*</span></label><input id="check-num" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="docsRun('GET','/api/check/'+document.getElementById('check-num').value,null,'resp-check',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-check" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── BLAST ─────────────────────────────────────────── -->
+  <div id="api-cat-blast" class="mb-8">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-orange-500 inline-block"></span>Blast Messaging</h2>
+    <div class="space-y-2">
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-blast-contacts">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('blast-contacts')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/blast/contacts</code><span class="text-xs text-gray-500">List blast contacts</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-3 max-w-sm"><label class="doc-lbl">device_id</label><input id="blast-contacts-device" type="text" placeholder="* (all devices)" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="docsRun('GET','/api/blast/contacts?device_id='+(document.getElementById('blast-contacts-device').value||'*'),null,'resp-blast-contacts',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-blast-contacts" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-blast-contacts-add">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('blast-contacts-add')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/blast/contacts</code><span class="text-xs text-gray-500">Add blast contact</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+            <div class="space-y-2 max-w-sm">
+              <div><label class="doc-lbl">name</label><input id="docs-blast-contact-name" type="text" placeholder="John Doe" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="doc-lbl">phone <span class="text-red-400">*</span></label><input id="docs-blast-contact-phone" type="text" placeholder="628123456789" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="doc-lbl">device_id</label><input id="docs-blast-contact-device" type="text" placeholder="* (all devices)" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            </div>
+            <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto self-start"><code>POST /api/blast/contacts
+X-API-Key: &lt;key&gt;
+
+{ "name": "John", "phone": "628…", "device_id": "*" }</code></pre>
+          </div>
+          <button onclick="docsRun('POST','/api/blast/contacts',{name:document.getElementById('docs-blast-contact-name').value,phone:document.getElementById('docs-blast-contact-phone').value,device_id:document.getElementById('docs-blast-contact-device').value||'*'},'resp-blast-contacts-add',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-blast-contacts-add" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-blast-campaigns">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('blast-campaigns')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/blast/campaigns</code><span class="text-xs text-gray-500">List blast campaigns</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <button onclick="docsRun('GET','/api/blast/campaigns',null,'resp-blast-campaigns',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-blast-campaigns" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-blast-campaigns-create">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('blast-campaigns-create')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/blast/campaigns</code><span class="text-xs text-gray-500">Create blast campaign</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
+            <div class="space-y-2 max-w-sm">
+              <div><label class="doc-lbl">name <span class="text-red-400">*</span></label><input id="docs-blast-camp-name" type="text" placeholder="Promo Januari" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="doc-lbl">message</label><textarea id="docs-blast-camp-message" rows="2" placeholder="Hello {name}!" class="input-field w-full px-3 py-1.5 rounded-lg text-sm font-mono"></textarea></div>
+              <div><label class="doc-lbl">media_url</label><input id="docs-blast-camp-media" type="text" placeholder="https://.../image.jpg" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="doc-lbl">caption</label><input id="docs-blast-camp-caption" type="text" placeholder="Media caption" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="doc-lbl">delay_ms</label><input id="docs-blast-camp-delay" type="number" value="2000" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+              <div><label class="doc-lbl">device_id</label><input id="docs-blast-camp-device" type="text" placeholder="* (all devices)" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            </div>
+            <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300 overflow-x-auto self-start"><code>POST /api/blast/campaigns
+X-API-Key: &lt;key&gt;
+
+{
+  "name": "Promo",
+  "message": "Hello {name}!",
+  "media_url": "",
+  "caption": "",
+  "delay_ms": 2000,
+  "device_id": "*"
+}</code></pre>
+          </div>
+          <button onclick="docsRun('POST','/api/blast/campaigns',{name:document.getElementById('docs-blast-camp-name').value,message:document.getElementById('docs-blast-camp-message').value,media_url:document.getElementById('docs-blast-camp-media').value,caption:document.getElementById('docs-blast-camp-caption').value,delay_ms:parseInt(document.getElementById('docs-blast-camp-delay').value)||2000,device_id:document.getElementById('docs-blast-camp-device').value||'*'},'resp-blast-campaigns-create',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-blast-campaigns-create" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-blast-run">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('blast-run')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/blast/campaigns/:id/run</code><span class="text-xs text-gray-500">Run campaign manually</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-3 max-w-sm"><label class="doc-lbl">campaign id <span class="text-red-400">*</span></label><input id="docs-blast-run-id" type="text" placeholder="123" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="docsRun('POST','/api/blast/campaigns/'+document.getElementById('docs-blast-run-id').value+'/run',{},'resp-blast-run',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-blast-run" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-blast-cron">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('blast-cron')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/cron/blast</code><span class="text-xs text-gray-500">Cron endpoint (public with token)</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <p class="text-xs text-gray-500 mb-3">Public cron endpoint. Requires token query parameter from .env CRON_TOKEN</p>
+          <div class="mb-3 max-w-sm"><label class="doc-lbl">token <span class="text-red-400">*</span></label><input id="docs-blast-cron-token" type="text" placeholder="your-cron-token" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="docsRun('GET','/api/cron/blast?token='+encodeURIComponent(document.getElementById('docs-blast-cron-token').value),null,'resp-blast-cron',false)" class="doc-btn">▶ Run</button>
+          <div id="resp-blast-cron" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── WEBHOOKS ──────────────────────────────────────── -->
+  <div id="api-cat-webhooks" class="mb-8">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-yellow-500 inline-block"></span>Webhooks</h2>
+    <div class="space-y-2">
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-wh-list">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('wh-list')">
+          <span class="doc-tag method-GET">GET</span><code class="text-sm text-white">/api/webhooks</code><span class="text-xs text-gray-500">List all webhooks</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <button onclick="docsRun('GET','/api/webhooks',null,'resp-wh-list',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-wh-list" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-wh-add">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('wh-add')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/webhooks</code><span class="text-xs text-gray-500">Register webhook</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="space-y-2 mb-3 max-w-sm">
+            <div><label class="doc-lbl">url <span class="text-red-400">*</span></label><input id="wh-url" type="text" placeholder="https://your.server/hook" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">device_id</label><input id="wh-device" type="text" placeholder="* (all devices)" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">events <span class="text-gray-500">(comma-separated)</span></label><input id="wh-events" type="text" value="message,message_sent" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">description</label><input id="wh-desc" type="text" placeholder="Optional label" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          </div>
+          <button onclick="docsAddWebhook()" class="doc-btn">▶ Run</button>
+          <div id="resp-wh-add" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-wh-del">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('wh-del')">
+          <span class="doc-tag method-DELETE">DELETE</span><code class="text-sm text-white">/api/webhooks/:id</code><span class="text-xs text-gray-500">Delete webhook</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="mb-3 max-w-sm"><label class="doc-lbl">webhook id <span class="text-red-400">*</span></label><input id="wh-del-id" type="text" placeholder="uuid" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+          <button onclick="docsRun('DELETE','/api/webhooks/'+document.getElementById('wh-del-id').value,null,'resp-wh-del',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-wh-del" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-wh-toggle">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('wh-toggle')">
+          <span class="doc-tag method-PATCH">PATCH</span><code class="text-sm text-white">/api/webhooks/:id/toggle</code><span class="text-xs text-gray-500">Enable/disable webhook</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <div class="flex gap-2 mb-3 max-w-sm">
+            <div class="flex-1"><label class="doc-lbl">webhook id <span class="text-red-400">*</span></label><input id="wh-tog-id" type="text" placeholder="uuid" class="input-field w-full px-3 py-1.5 rounded-lg text-sm"/></div>
+            <div><label class="doc-lbl">active</label><select id="wh-tog-active" class="input-field px-3 py-1.5 rounded-lg text-sm"><option value="true">true</option><option value="false">false</option></select></div>
+          </div>
+          <button onclick="docsToggleWebhook()" class="doc-btn">▶ Run</button>
+          <div id="resp-wh-toggle" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── DEVICE CONTROL ────────────────────────────────── -->
+  <div id="api-cat-device" class="mb-8">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-red-500 inline-block"></span>Device Control</h2>
+    <div class="space-y-2">
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-logout-ep">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('logout-ep')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/logout</code><span class="text-xs text-gray-500">Logout WhatsApp session</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <p class="text-xs text-yellow-400 mb-3">⚠ Disconnects the WhatsApp session.</p>
+          <button onclick="docsRun('POST','/api/logout',{},'resp-logout-ep',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-logout-ep" class="mt-3 hidden"></div>
+        </div>
+      </div>
+      <div class="ep-card card rounded-xl border border-slate-700/40" id="ep-restart-ep">
+        <div class="ep-hdr flex items-center gap-3 px-4 py-3 cursor-pointer" onclick="docsToggleEp('restart-ep')">
+          <span class="doc-tag method-POST">POST</span><code class="text-sm text-white">/api/restart</code><span class="text-xs text-gray-500">Restart WhatsApp service</span>
+          <svg class="ep-chev w-4 h-4 text-gray-500 ml-auto transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </div>
+        <div class="ep-body hidden px-4 pb-4 border-t border-slate-700/40 pt-4">
+          <button onclick="docsRun('POST','/api/restart',{},'resp-restart-ep',true)" class="doc-btn">▶ Run</button>
+          <div id="resp-restart-ep" class="mt-3 hidden"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── WEBSOCKET ──────────────────────────────────────── -->
+  <div id="api-cat-ws" class="mb-8">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-teal-500 inline-block"></span>WebSocket</h2>
+    <div class="card rounded-xl border border-slate-700/40 p-5 space-y-4">
+      <div><div class="text-xs font-semibold text-gray-400 mb-1">Connect URL</div>
+        <code id="docs-ws-url" class="text-sm text-green-400 bg-black/30 px-3 py-1.5 rounded-lg block font-mono"></code>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div><div class="text-xs font-semibold text-gray-400 mb-2">Client → Server</div>
+          <pre class="bg-black/40 rounded-lg p-3 text-xs text-green-300"><code>{ "action": "ping" }
+{ "action": "get_status" }
+{ "action": "get_qr" }</code></pre></div>
+        <div><div class="text-xs font-semibold text-gray-400 mb-2">Server → Client</div>
+          <pre class="bg-black/40 rounded-lg p-3 text-xs text-blue-300"><code>status | qr | ready | disconnected
+message | message_sent | message_ack
+typing | authenticated | pong</code></pre></div>
+      </div>
+      <div>
+        <div class="text-xs font-semibold text-gray-400 mb-2">Live Test</div>
+        <div class="flex gap-2 mb-2">
+          <button id="ws-test-btn" onclick="docsWsConnect()" class="doc-btn">Connect</button>
+          <button onclick="docsWsSend()" class="doc-btn" id="ws-test-send" disabled>Send</button>
+          <select id="ws-test-action" class="input-field px-2 py-1.5 rounded-lg text-sm">
+            <option value="ping">ping</option>
+            <option value="get_status">get_status</option>
+            <option value="get_qr">get_qr</option>
+          </select>
+        </div>
+        <div id="ws-test-log" class="bg-black/40 rounded-lg p-3 text-xs font-mono h-36 overflow-y-auto space-y-1">
+          <div class="text-gray-600">Not connected.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── WEBHOOK PAYLOAD REFERENCE ────────────────────── -->
+  <div class="mb-4">
+    <h2 class="text-sm font-bold text-white mb-3 flex items-center gap-2"><span class="w-1 h-4 rounded bg-orange-500 inline-block"></span>Webhook Payload Reference</h2>
+    <div class="card rounded-xl border border-slate-700/40 p-5">
+      <pre class="bg-black/40 rounded-lg p-4 text-xs text-green-300 overflow-x-auto mb-4"><code>{
+  "event":     "message",
+  "device_id": "wa-session",
+  "timestamp": "2025-01-01T00:00:00.000Z",
+  "data": { "id": "…", "from": "628…@c.us", "body": "Hello!", "type": "chat" }
+}</code></pre>
+      <div class="text-xs font-semibold text-gray-400 mb-1">HMAC Signature (if secret set)</div>
+      <pre class="bg-black/40 rounded-lg p-3 text-xs text-yellow-300"><code>X-WA-Signature: sha256=HMAC(secret, body)</code></pre>
+    </div>
+  </div>
+
+</section>
