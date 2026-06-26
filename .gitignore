@@ -14,6 +14,9 @@ sessions/
 *.log
 npm-debug.log*
 
+# Database files
+wa.sql
+
 # OS
 .DS_Store
 Thumbs.db
