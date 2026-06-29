@@ -5,28 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>WA Gateway — Control Center</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        colors: {
-          surface: { 900:'#0f1117',800:'#161b22',700:'#1c2333',600:'#21262d',500:'#30363d' },
-        },
-        fontFamily: { sans: ['Inter','system-ui','sans-serif'] },
-        animation: {
-          'pulse-slow': 'pulse 3s cubic-bezier(0.4,0,0.6,1) infinite',
-          'slide-in':   'slideIn 0.3s ease-out',
-          'fade-in':    'fadeIn 0.4s ease-out',
-        },
-        keyframes: {
-          slideIn: { from:{ transform:'translateY(-10px)', opacity:'0' }, to:{ transform:'translateY(0)', opacity:'1' } },
-          fadeIn:  { from:{ opacity:'0' }, to:{ opacity:'1' } },
-        }
-      }
-    }
-  }
-</script>
+<link rel="stylesheet" href="/output.css" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -50,22 +29,22 @@
     --msg-out:   rgba(22,163,74,0.22);
   }
   html.light {
-    --bg:        #f6fbf7;
+    --bg:        #f8fafc;
     --bg-surf:   #ffffff;
-    --bg-card:   rgba(255,255,255,0.99);
+    --bg-card:   #ffffff;
     --bg-input:  #ffffff;
-    --border:    rgba(22,163,74,0.22);
-    --border-s:  rgba(22,163,74,0.14);
-    --accent:    #16a34a;
-    --accent-bg: rgba(22,163,74,0.10);
-    --accent-br: rgba(22,163,74,0.30);
+    --border:    #e2e8f0;
+    --border-s:  #f1f5f9;
+    --accent:    #3b82f6;
+    --accent-bg: rgba(59,130,246,0.08);
+    --accent-br: rgba(59,130,246,0.20);
     --t1:        #0f172a;
-    --t2:        #334155;
-    --t3:        #64748b;
-    --code-bg:   rgba(241,248,243,0.9);
-    --sb:        rgba(22,163,74,0.35);
+    --t2:        #475569;
+    --t3:        #94a3b8;
+    --code-bg:   #f8fafc;
+    --sb:        rgba(148,163,184,0.35);
     --msg-in:    #ffffff;
-    --msg-out:   #dcfce7;
+    --msg-out:   #dbeafe;
   }
 
   * { box-sizing: border-box; }
@@ -102,7 +81,7 @@
   .btn-primary:active { transform:translateY(0); filter:none; }
   html.light .btn-primary { background: linear-gradient(135deg,#16a34a,#15803d); }
   html.light .btn-primary:hover { box-shadow:0 4px 15px rgba(22,163,74,0.30); }
-  .btn-danger  { background: linear-gradient(135deg,#dc2626,#b91c1c); transition:all 0.2s; }
+  .btn-danger  { background: linear-gradient(135deg,#dc2626,#b91c1c); color:#fff; transition:all 0.2s; }
   .btn-danger:hover { background: linear-gradient(135deg,#b91c1c,#991b1b); transform:translateY(-1px); }
 
   .nav-btn { transition: all 0.15s; border-radius: 8px; }
@@ -166,6 +145,42 @@
   html.light .reply-delay-select option { background: #fff; color: #374151; }
   html.light .text-red-400   { color: #dc2626 !important; }
   html.light .text-yellow-400{ color: #b45309 !important; }
+  
+  /* ─── Light mode button & badge contrast fixes ─── */
+  html.light .text-green-400.bg-green-900\/20 { 
+    background: #dcfce7 !important; 
+    color: #15803d !important; 
+    border-color: rgba(22,163,74,0.4) !important; 
+  }
+  html.light .bg-slate-700\/50.text-white { 
+    background: #e2e8f0 !important; 
+    color: #0f172a !important; 
+  }
+  html.light .blast-tab.bg-slate-700\/50 { 
+    background: #e2e8f0 !important; 
+    color: #0f172a !important; 
+    border-bottom: 2px solid #15803d !important;
+  }
+  html.light .text-red-400 { color: #dc2626 !important; }
+  html.light .text-red-400:hover { color: #991b1b !important; background: rgba(220,38,38,0.1) !important; }
+  html.light .text-red-300:hover { color: #991b1b !important; background: rgba(220,38,38,0.1) !important; }
+  html.light .bg-green-600 { background: #16a34a !important; }
+  html.light .bg-gray-700 { background: #d1d5db !important; }
+  html.light .device-active-badge { 
+    background: #dcfce7 !important; 
+    color: #15803d !important; 
+    border-color: rgba(22,163,74,0.4) !important; 
+  }
+  html.light .text-green-400:not(.device-active-badge) { color: #16a34a !important; }
+  html.light .border-green-800\/40 { border-color: rgba(22,163,74,0.5) !important; }
+  html.light .border-blue-800\/40 { border-color: rgba(37,99,235,0.5) !important; }
+  html.light .text-blue-400 { color: #2563eb !important; }
+  html.light button.text-gray-400 { color: #6b7280 !important; }
+  html.light button.text-gray-400:hover { color: #374151 !important; }
+  html.light .border-slate-700\/50 { border-color: #cbd5e1 !important; }
+  html.light .text-gray-300 { color: #4b5563 !important; }
+  html.light .text-gray-300:hover { color: #1f2937 !important; }
+  
   html.light #sec-messages { background: #f6fbf7 !important; }
   html.light #sec-messages [class*="bg-surface-900"] { background: #ffffff !important; }
   html.light #sec-messages [class*="bg-slate-900/60"] { background: rgba(255,255,255,0.85) !important; }
@@ -2884,7 +2899,7 @@ function renderDeviceCard(d) {
         ${statusHint ? `<div class="text-[11px] text-gray-500 mt-1 leading-relaxed">${escHtml(statusHint)}</div>` : ''}
       </div>
       <button onclick="toggleDeviceActive(${d.id}, ${d.active ? 0 : 1})" title="${d.active ? 'Deactivate device' : 'Activate device'}" class="flex-shrink-0 relative w-9 h-5 rounded-full transition-colors duration-200 ${d.active ? 'bg-green-600' : 'bg-gray-700'}"><span style="left:${d.active ? '18px' : '2px'}" class="absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-all duration-200"></span></button>
-      ${d.active ? `<span class="text-xs text-green-400 bg-green-900/20 border border-green-800/30 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">Active</span>` : `<span class="text-xs text-gray-500 bg-slate-800/60 border border-slate-700/40 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">Inactive</span>`}
+      ${d.active ? `<span class="device-active-badge text-xs text-green-400 bg-green-900/20 border border-green-800/30 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">Active</span>` : `<span class="text-xs text-gray-500 bg-slate-800/60 border border-slate-700/40 px-2 py-0.5 rounded-full whitespace-nowrap flex-shrink-0">Inactive</span>`}
       ${isActive && status === 'qr' ? `<button onclick="openQrModal('${safeKey}','${safeDeviceId}')" title="Scan QR" class="w-7 h-7 rounded-lg flex items-center justify-center text-yellow-400 border border-yellow-800/40 hover:bg-yellow-900/20 transition-all flex-shrink-0"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">${ico.qr}</svg></button>` : ''}
     </div>
 
@@ -4391,7 +4406,7 @@ function renderBlastGroups() {
             <div class="px-2.5 py-1 rounded-full bg-slate-800/70 text-[11px] text-gray-300 shrink-0">${Number(g.total_contacts || 0)}</div>
           </div>
         </button>
-        <button onclick="deleteBlastGroup(${g.id})" class="text-[11px] text-red-400 hover:text-red-300">Hapus</button>
+        <button onclick="deleteBlastGroup(${g.id})" class="text-[11px] px-2 py-0.5 rounded text-red-400 hover:text-red-300 hover:bg-red-900/20 transition-colors">Hapus</button>
       </div>
     </div>
   `));
@@ -4502,7 +4517,7 @@ function renderBlastContacts() {
       </td>
       <td class="px-4 py-2 text-right">
         <button onclick="toggleBlastContact(${c.id}, ${!c.active})" class="text-xs text-blue-400 hover:text-blue-300 mr-2">${c.active ? 'Nonaktifkan' : 'Aktifkan'}</button>
-        <button onclick="deleteBlastContact(${c.id})" class="text-xs text-red-400 hover:text-red-300">Hapus</button>
+        <button onclick="deleteBlastContact(${c.id})" class="text-xs px-2 py-0.5 rounded text-red-400 hover:text-red-300 hover:bg-red-900/20 transition-colors">Hapus</button>
       </td>
     </tr>
   `).join('');

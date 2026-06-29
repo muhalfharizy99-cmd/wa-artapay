@@ -1,7 +1,36 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Tailwind v4 — imports */
+@import "tailwindcss";
 
+/* ─── Custom theme extensions ───────────────────────────────────────────── */
+@theme {
+  --color-surface-900: #0f1117;
+  --color-surface-800: #161b22;
+  --color-surface-700: #1c2333;
+  --color-surface-600: #21262d;
+  --color-surface-500: #30363d;
+
+  --font-sans: 'Inter', 'system-ui', 'sans-serif';
+
+  --animate-pulse-slow: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-slide-in:   slide-in 0.3s ease-out;
+  --animate-fade-in:    fade-in 0.4s ease-out;
+}
+
+/* Keyframes — defined outside @theme as required by Tailwind v4 */
+@keyframes slide-in {
+  from { transform: translateY(-10px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.5; }
+}
+
+/* ─── Design tokens (CSS vars) ──────────────────────────────────────────── */
 @layer base {
   :root {
     --bg:        #181818;
@@ -23,31 +52,31 @@
   }
 
   html.light {
-    --bg:        #f6fbf7;
+    --bg:        #f8fafc;
     --bg-surf:   #ffffff;
-    --bg-card:   rgba(255,255,255,0.99);
+    --bg-card:   #ffffff;
     --bg-input:  #ffffff;
-    --border:    rgba(22,163,74,0.22);
-    --border-s:  rgba(22,163,74,0.14);
-    --accent:    #16a34a;
-    --accent-bg: rgba(22,163,74,0.10);
-    --accent-br: rgba(22,163,74,0.30);
+    --border:    #e2e8f0;
+    --border-s:  #f1f5f9;
+    --accent:    #3b82f6;
+    --accent-bg: rgba(59,130,246,0.08);
+    --accent-br: rgba(59,130,246,0.20);
     --t1:        #0f172a;
-    --t2:        #334155;
-    --t3:        #64748b;
-    --code-bg:   rgba(241,248,243,0.9);
-    --sb:        rgba(22,163,74,0.35);
+    --t2:        #475569;
+    --t3:        #94a3b8;
+    --code-bg:   #f8fafc;
+    --sb:        rgba(148,163,184,0.35);
     --msg-in:    #ffffff;
-    --msg-out:   #dcfce7;
+    --msg-out:   #dbeafe;
   }
-  
+
   /* Smooth color transitions */
   * {
     transition-property: background-color, border-color, color, fill, stroke;
     transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     transition-duration: 150ms;
   }
-  
+
   *:where(:not(:has(canvas))) {
     transition-property: background-color, border-color, color, fill, stroke;
   }
